@@ -36,23 +36,10 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        val tabLayout = findViewById<TabLayout>(R.id.tab_layout )
-        val viewPager2 = findViewById<ViewPager2>(R.id.view_pager_2)
 
-        val adapter=ViewPagerAdapter(supportFragmentManager, lifecycle)
-
-        viewPager2.adapter = adapter
-
-        // Link TabLayout and ViewPager2
-        TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            tab.text = when (position) {
-                0 -> "Currently Reading"
-                1 -> "To Read"
-                2 -> "Finished"
-                else -> "Currently Reading"
-            }
-        }.attach()
-
+        }
 
     }
-}
+
+
+
