@@ -50,7 +50,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation("androidx.viewpager2:viewpager2:1.1.0")
-    implementation("com.google:android.material:material:1.3.0-alpa04")
+//    implementation("com.google:android.material:material:1.4.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
