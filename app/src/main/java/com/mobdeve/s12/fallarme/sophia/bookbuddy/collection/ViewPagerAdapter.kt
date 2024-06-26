@@ -7,25 +7,29 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class ViewPagerAdapter (fragmentManager: FragmentManager, lifecycle: Lifecycle): FragmentStateAdapter(fragmentManager, lifecycle) {
     override fun getItemCount(): Int {
-        return 3
+        return 4
     }
 
     override fun createFragment(position: Int): Fragment {
        return when(position){
             0 -> {
-                CurrentlyReadingFragment()
+                AllFragment()
             }
 
             1-> {
-                ToReadFragment()
+                CurrentlyReadingFragment()
             }
 
             2->{
-                FinishedFragment()
+                ToReadFragment()
             }
 
+           3 -> {
+               FinishedFragment()
+           }
+
             else ->{
-                CurrentlyReadingFragment()
+                AllFragment()
             }
         }
     }

@@ -48,10 +48,11 @@ class HomeFragment : Fragment() {
 
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             tab.text = when (position) {
-                0 -> "Currently Reading"
-                1 -> "To Read"
-                2 -> "Finished"
-                else -> "Currently Reading"
+                0 -> "All"
+                1 -> "Currently Reading"
+                2 -> "To Read"
+                3 -> "Finished"
+                else -> "All"
             }
         }.attach()
     }
