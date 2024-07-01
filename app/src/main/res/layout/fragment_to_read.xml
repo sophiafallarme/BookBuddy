@@ -10,8 +10,8 @@
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="411dp"
-        android:layout_height="518dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:text="To Read Fragment"
         android:textAlignment="center"
         android:textSize="34sp"

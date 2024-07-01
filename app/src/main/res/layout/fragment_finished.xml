@@ -10,8 +10,8 @@
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="412dp"
-        android:layout_height="564dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:text="Finished Fragment"
         android:textAlignment="center"
         android:textSize="34sp"
