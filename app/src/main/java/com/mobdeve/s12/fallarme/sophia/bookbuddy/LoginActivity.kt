@@ -4,7 +4,9 @@ package com.mobdeve.s12.fallarme.sophia.bookbuddy
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.RegisterActivity
@@ -12,40 +14,46 @@ import com.mobdeve.s12.fallarme.sophia.bookbuddy.RegisterActivity
 
 class LoginActivity : AppCompatActivity() {
 
+    private lateinit var usernameEtv: EditText
+    private lateinit var passwordEtv: EditText
+    private lateinit var loginBtn: Button
+    private lateinit var dbHelper: MyDbHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        usernameEtv = findViewById(R.id.usernameEtv)
+        passwordEtv = findViewById(R.id.passwordEtv)
+        loginBtn = findViewById(R.id.loginBtn)
+        dbHelper = MyDbHelper.getInstance(this)!!
+
         val registerLn = findViewById<TextView>(R.id.registerLn)
 
-
         registerLn.setOnClickListener {
-            // Intent to start the RegisterActivity
             startActivity(Intent(this@LoginActivity, RegisterActivity::class.java))
         }
 
-        /*
-        // Set onClickListener for login Button
         loginBtn.setOnClickListener {
-            // Placeholder login logic, replace with actual logic
-            val isLoginSuccessful = login()
+            val username = usernameEtv.text.toString()
+            val password = passwordEtv.text.toString()
 
-            if (isLoginSuccessful) {
-                // Redirect to HomeActivity (or any other activity hosting HomeFragment)
+            if (login(username, password)) {
                 startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
-                finish() // Optional: Finish the current activity
+                finish()
+            } else {
+                Toast.makeText(this, "Invalid username or password.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // Placeholder login method, replace with actual login logic
-    private fun login(): Boolean {
-        val username = usernameEtv.text.toString()
-        val password = passwordEtv.text.toString()
-
-        // Add your login logic here
-        return username == "user" && password == "password" // Example logic
-    }
-    */
+    private fun login(username: String, password: String): Boolean {
+        val users = dbHelper.getAllUsers()
+        for (user in users) {
+            if (user.username == username && user.password == password) {
+                return true
+            }
+        }
+        return false
     }
 }
