@@ -39,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
             val password = passwordEtv.text.toString()
 
             if (login(username, password)) {
-                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                 finish()
             } else {
                 Toast.makeText(this, "Invalid username or password.", Toast.LENGTH_SHORT).show()
