@@ -55,11 +55,11 @@ class CurrentlyReadingFragment : Fragment() {
     private fun getSampleData(): ArrayList<Book> {
 //        return listOf("Rich Dad, Poor Dad", "The Alchemist", "Negotiation 101", "The Cruel Prince", "Item 5")
         val books = ArrayList<Book>()
-        books.add(Book("I want a better catastrophe", "Andre Boyd", R.drawable.book1))
-        books.add(Book("The Midnight Library", "Matt Haig", R.drawable.book2))
-        books.add(Book("Rich Dad, Poor Dad", "Robert Kiyosaki", R.drawable.book3))
-        books.add(Book("The Cruel Prince", "Holly Black", R.drawable.book4))
-        books.add(Book("Atomic Habits", "James Clear", R.drawable.book5))
+        books.add(Book("I want a better catastrophe", "Andre Boyd", "Non-fiction", R.drawable.book1))
+        books.add(Book("The Midnight Library", "Matt Haig", "Fiction", R.drawable.book2))
+        books.add(Book("Rich Dad, Poor Dad", "Robert Kiyosaki", "Non-fiction", R.drawable.book3))
+        books.add(Book("The Cruel Prince", "Holly Black", "Fantasy", R.drawable.book4))
+        books.add(Book("Atomic Habits", "James Clear", "Non-fiction", R.drawable.book5))
         return books
     }
 
