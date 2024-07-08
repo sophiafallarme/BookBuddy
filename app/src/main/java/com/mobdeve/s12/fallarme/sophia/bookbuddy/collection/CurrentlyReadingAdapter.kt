@@ -14,6 +14,7 @@ class CurrentlyReadingAdapter(private val data: ArrayList<Book>) :
     class SampleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val bookTitle: TextView = itemView.findViewById(R.id.tvwBookTitle)
         val bookAuthor: TextView = itemView.findViewById(R.id.tvwAuthor)
+        val bookCategory : TextView = itemView.findViewById(R.id.tvwCategory)
         val bookCover: ImageView = itemView.findViewById(R.id.imgvwBookCover)
     }
 
@@ -27,6 +28,7 @@ class CurrentlyReadingAdapter(private val data: ArrayList<Book>) :
         val book = data[position]
         holder.bookTitle.text = book.title
         holder.bookAuthor.text = book.author
+        holder.bookCategory .text = book.category
         holder.bookCover.setImageResource(book.coverResId)
     }
 
