@@ -1,10 +1,14 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy
 
-import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+
+
+
+    import android.os.Bundle
+    import android.widget.Button
+    import android.widget.EditText
+    import android.widget.Toast
+    import androidx.appcompat.app.AppCompatActivity
+    import org.mindrot.jbcrypt.BCrypt
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -33,7 +37,8 @@ class RegisterActivity : AppCompatActivity() {
             val password = passwordEtv.text.toString()
 
             if (firstName.isNotEmpty() && lastName.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty()) {
-                val newUser = Account(firstName, lastName, username, password)
+                val hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12))
+                val newUser = Account(firstName, lastName, username, hashedPassword)
                 val id = dbHelper.insertUser(newUser)
 
                 if (id > 0) {

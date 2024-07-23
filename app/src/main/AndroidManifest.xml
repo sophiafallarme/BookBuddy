@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -38,6 +40,18 @@
             android:exported="true"
             android:label="@string/app_name">
             <!-- No intent-filter here -->
+        </activity>
+
+        <activity
+            android:name=".BookActivity"
+            android:exported="true">
+
+        </activity>
+
+        <activity
+            android:name=".BookSearchActivity"
+            android:exported="true">
+
         </activity>
 
 
