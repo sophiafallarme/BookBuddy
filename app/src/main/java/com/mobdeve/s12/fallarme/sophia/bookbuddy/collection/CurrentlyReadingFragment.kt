@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.databinding.FragmentCurrentlyReadingBinding
@@ -40,7 +40,7 @@ class CurrentlyReadingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView = binding.recyclerView
-        layoutManager = LinearLayoutManager(context)
+        layoutManager = GridLayoutManager(context, 2)
         adapter = CurrentlyReadingAdapter(getSampleData())
 
         recyclerView.layoutManager = layoutManager
@@ -52,8 +52,15 @@ class CurrentlyReadingFragment : Fragment() {
     }
 
 
-    private fun getSampleData(): List<String> {
-        return listOf("Rich Dad, Poor Dad", "The Alchemist", "Negotiation 101", "The Cruel Prince", "Item 5")
+    private fun getSampleData(): ArrayList<Book> {
+//        return listOf("Rich Dad, Poor Dad", "The Alchemist", "Negotiation 101", "The Cruel Prince", "Item 5")
+        val books = ArrayList<Book>()
+        books.add(Book("I want a better catastrophe", "Andre Boyd", "Non-fiction", R.drawable.book1))
+        books.add(Book("The Midnight Library", "Matt Haig", "Fiction", R.drawable.book2))
+        books.add(Book("Rich Dad, Poor Dad", "Robert Kiyosaki", "Non-fiction", R.drawable.book3))
+        books.add(Book("The Cruel Prince", "Holly Black", "Fantasy", R.drawable.book4))
+        books.add(Book("Atomic Habits", "James Clear", "Non-fiction", R.drawable.book5))
+        return books
     }
 
 }
