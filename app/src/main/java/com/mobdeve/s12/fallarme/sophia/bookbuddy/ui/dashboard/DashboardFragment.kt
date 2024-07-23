@@ -1,5 +1,6 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy.ui.dashboard
 
+/*
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -40,3 +41,5 @@ class DashboardFragment : Fragment() {
         _binding = null
     }
 }
+
+ */

@@ -54,4 +54,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("org.mindrot:jbcrypt:0.4")
+    implementation ("com.github.bumptech.glide:glide:4.13.2")
+    kapt ("com.github.bumptech.glide:compiler:4.13.2")
 }

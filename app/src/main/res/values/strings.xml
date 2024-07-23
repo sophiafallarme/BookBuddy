@@ -5,4 +5,20 @@
     <string name="title_notifications">Schedule</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <string-array name="status_array">
+        <item>To Read</item>
+        <item>Currently Reading</item>
+        <item>Finished</item>
+    </string-array>
+
+    <string-array name="category_array">
+        <!--<item>Fiction</item>
+        <item>Non-Fiction</item>
+        <item>Biography</item>
+        <item>Science</item>
+        <item>Fantasy</item> -->
+        <item>Add New Category</item> <!-- Add this option -->
+    </string-array>
 </resources>

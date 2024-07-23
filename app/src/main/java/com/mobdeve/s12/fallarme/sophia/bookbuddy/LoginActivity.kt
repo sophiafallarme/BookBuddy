@@ -3,14 +3,13 @@ package com.mobdeve.s12.fallarme.sophia.bookbuddy
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
-import com.mobdeve.s12.fallarme.sophia.bookbuddy.RegisterActivity
-
+import org.mindrot.jbcrypt.BCrypt
 
 class LoginActivity : AppCompatActivity() {
 
@@ -18,6 +17,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var passwordEtv: EditText
     private lateinit var loginBtn: Button
     private lateinit var dbHelper: MyDbHelper
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,26 +35,59 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this@LoginActivity, RegisterActivity::class.java))
         }
 
+
         loginBtn.setOnClickListener {
             val username = usernameEtv.text.toString()
             val password = passwordEtv.text.toString()
 
-            if (login(username, password)) {
-                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
-                finish()
+            if (username.isNotEmpty() && password.isNotEmpty()) {
+                val user = dbHelper.getUserByUsername(username)
+
+                if (user != null && BCrypt.checkpw(password, user.password)) {
+                    Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+
+
+                    // Pass the account ID to the next activity
+                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    intent.putExtra("account_id", user.id)
+                    startActivity(intent)
+
+
+
+
+
+
+                    /*
+                    // Directly start BookSearchActivity
+                    val intent = Intent(this@LoginActivity, BookSearchActivity::class.java)
+                    intent.putExtra("account_id", user.id)
+                    startActivity(intent)
+
+
+
+                     */
+
+
+
+                    Log.d("LoginActivity", "Passing account_id: ${user.id} to BookSearchActivity")
+
+                  //  startActivity(Intent(this@LoginActivity, BookActivity::class.java))
+
+                    logSavedBooks(user) // check for savedbooks
+                    finish()
+                    // Proceed to next activity or home screen
+                } else {
+                    Toast.makeText(this, "Invalid username or password.", Toast.LENGTH_SHORT).show()
+                }
             } else {
-                Toast.makeText(this, "Invalid username or password.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun login(username: String, password: String): Boolean {
-        val users = dbHelper.getAllUsers()
-        for (user in users) {
-            if (user.username == username && user.password == password) {
-                return true
-            }
-        }
-        return false
+    private fun logSavedBooks(account: Account) {
+        // Log the saved books
+        Log.d("LoginActivity", "Saved Books: ${account.savedBooks.joinToString(", ")}")
+        Log.d("LoginActivity", "Categories: ${account.category.joinToString(", ")}")
     }
 }
