@@ -671,13 +671,22 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
     }
 
     @Synchronized
-    fun getBooksByAccountId(accountId: Long): List<Book> {
+    fun getBooksByAccountId(accountId: Long, status: String? = null): List<Book> {
         val database = this.readableDatabase
+        val selectionArgs = mutableListOf<String>().apply {
+            add(accountId.toString())
+            status?.let { add(it) }
+        }.toTypedArray()
+        val selection = "${DbReferences.COLUMN_NAME_ACCOUNT_ID} = ?" +
+                (status?.let { " AND ${DbReferences.COLUMN_NAME_BOOK_STATUS} = ?" } ?: "")
+
         val cursor = database.query(
             DbReferences.BOOK_TABLE_NAME,
             null,
-            "${DbReferences.COLUMN_NAME_ACCOUNT_ID} = ?",
-            arrayOf(accountId.toString()),
+//            "${DbReferences.COLUMN_NAME_ACCOUNT_ID} = ?" + (status?.let { " AND ${DbReferences.COLUMN_NAME_BOOK_STATUS} = ?" } ?: ""),
+//            arrayOf(accountId.toString()),
+            selection,
+            selectionArgs,
             null,
             null,
             null
@@ -685,13 +694,29 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
 
         val books = mutableListOf<Book>()
 
-        while (cursor.moveToNext()) {
-            books.add(Book(
-                cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_TITLE)),
-                cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_AUTHOR)),
-                cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_STATUS)),
-                cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_CATEGORY)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_RATING))))
+//        while (cursor.moveToNext()) {
+//            books.add(Book(
+//                cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_TITLE)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_AUTHOR)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_STATUS)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_CATEGORY)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_RATING)),
+//        }
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences._ID))
+                val title = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_TITLE))
+                val author = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_AUTHOR))
+                val image = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_IMAGE))
+                val rating = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_RATING))
+                val status = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_STATUS))
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_CATEGORY))
+                val retrievedAccountId = cursor.getLong(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_ACCOUNT_ID))
+
+                val book = Book(id, title, author, image, rating, status, category, retrievedAccountId)
+                books.add(book)
+            } while (cursor.moveToNext())
         }
 
         cursor.close()
@@ -699,6 +724,37 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
 
         return books
     }
+
+    fun getCategoriesByAccountId(accountId: Long): List<String> {
+        val categories = mutableListOf<String>()
+        val database = this.readableDatabase
+        val cursor = database.query(
+            true,  // distinct
+            DbReferences.BOOK_TABLE_NAME,
+            arrayOf(DbReferences.COLUMN_NAME_BOOK_CATEGORY),
+            "${DbReferences.COLUMN_NAME_ACCOUNT_ID} = ?",
+            arrayOf(accountId.toString()),
+            null,
+            null,
+            null,
+            null
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_CATEGORY))
+                if (!category.isNullOrEmpty()) {
+                    categories.add(category)
+                }
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        database.close()
+
+        return categories
+    }
+
 
     fun getUserByUsername(username: String): Account? {
         val db = this.readableDatabase
@@ -761,6 +817,7 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
             cursor.close()
         }
     }
+
 
 
 }

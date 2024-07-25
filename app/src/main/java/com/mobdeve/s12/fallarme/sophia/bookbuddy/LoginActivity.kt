@@ -1,6 +1,7 @@
 
 package com.mobdeve.s12.fallarme.sophia.bookbuddy
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -46,6 +47,8 @@ class LoginActivity : AppCompatActivity() {
                 if (user != null && BCrypt.checkpw(password, user.password)) {
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
 
+                    // Save account ID to SharedPreferences
+                    saveAccountIdToPreferences(user.id)
 
                     // Pass the account ID to the next activity
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
@@ -90,4 +93,13 @@ class LoginActivity : AppCompatActivity() {
         Log.d("LoginActivity", "Saved Books: ${account.savedBooks.joinToString(", ")}")
         Log.d("LoginActivity", "Categories: ${account.category.joinToString(", ")}")
     }
+
+    private fun saveAccountIdToPreferences(accountId: Long) {
+        val sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putLong("accountId", accountId)
+        editor.apply()
+        Log.d("LoginActivity", "Account ID saved to SharedPreferences: $accountId")
+    }
+
 }
