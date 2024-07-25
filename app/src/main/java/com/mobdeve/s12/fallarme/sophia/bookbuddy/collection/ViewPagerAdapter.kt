@@ -33,4 +33,15 @@ class ViewPagerAdapter (fragmentManager: FragmentManager, lifecycle: Lifecycle):
             }
         }
     }
+
+    private val fragments = listOf(
+        AllFragment(),
+        CurrentlyReadingFragment(),
+        ToReadFragment(),
+        FinishedFragment()
+    )
+    fun getFragment(position: Int): Fragment {
+        return fragments[position]
+    }
+
 }

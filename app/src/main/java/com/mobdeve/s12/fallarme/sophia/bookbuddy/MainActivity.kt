@@ -1,5 +1,6 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -12,6 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.mobdeve.s12.fallarme.sophia.bookbuddy.collection.AllFragment
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.collection.ViewPagerAdapter
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.databinding.ActivityMainBinding
 
@@ -71,7 +73,27 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        // Save the account ID to SharedPreferences
+//        saveAccountIdToPreferences(accountId)
+
+        // Set up the fragment transaction
+        if (savedInstanceState == null) {
+            val allFragment = AllFragment()
+
+//            supportFragmentManager.beginTransaction()
+//                .replace(R.id.fragment_container, allFragment)
+//                .commit()
+        }
     }
+
+//    private fun saveAccountIdToPreferences(accountId: Long) {
+//        val sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+//        val editor = sharedPreferences.edit()
+//        editor.putLong("accountId", accountId)
+//        editor.apply()
+//        Log.d("MainActivity", "Account ID saved to SharedPreferences: $accountId")
+//    }
 }
 
 
