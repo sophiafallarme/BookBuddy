@@ -54,8 +54,6 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation ("androidx.recyclerview:recyclerview:1.3.2")
     implementation ("androidx.gridlayout:gridlayout:1.0.0")
-    implementation(libs.firebase.auth.ktx)
-    implementation(libs.androidx.datastore.core.android)
 //    implementation("com.google.android.material:material:1.8.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

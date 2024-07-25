@@ -1,7 +1,7 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy
 
 object DbReferences {
-    const val DATABASE_VERSION = 3
+    const val DATABASE_VERSION = 5
     const val DATABASE_NAME = "books.db"
 
     const val TABLE_NAME = "accounts"
