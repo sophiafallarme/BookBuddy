@@ -1,5 +1,6 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy.collection
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -7,10 +8,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.Book
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.BookViewModel
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.MyDbHelper
@@ -73,6 +78,8 @@ class CurrentlyReadingFragment : Fragment() {
     private lateinit var myDbHelper: MyDbHelper
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel: BookViewModel
+    private var accountId: Long = -1L
+    private var originalBooks: List<Book> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +108,11 @@ class CurrentlyReadingFragment : Fragment() {
         //used to update fragment based on newly saved books
         viewModel = ViewModelProvider(requireActivity()).get(BookViewModel::class.java)
 
+        // Set up FAB to open the filter dialog
+        view.findViewById<FloatingActionButton>(R.id.fabFilter).setOnClickListener {
+            showFilterDialog()
+        }
+
         return view
 
     }
@@ -110,14 +122,18 @@ class CurrentlyReadingFragment : Fragment() {
 
         // Retrieve accountId from SharedPreferences
         val sharedPreferences = requireContext().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
-        val accountId = sharedPreferences.getLong("accountId", -1L)
+        accountId = sharedPreferences.getLong("accountId", -1L)
 
         // Retrieve books and update adapter
         if (accountId != -1L) {
-            val books = myDbHelper.getBooksByAccountId(accountId, "Currently Reading")
-            Log.d("CurrentlyReadingFragment", "Books retrieved: ${books.size}")
-            books.forEach { Log.d("CurrentlyReadingFragment", "Book: ${it.title}, Status: ${it.status}") }
-            bookAdapter.updateBooks(books)
+//            val books = myDbHelper.getBooksByAccountId(accountId, "Currently Reading")
+//            Log.d("CurrentlyReadingFragment", "Books retrieved: ${books.size}")
+//            books.forEach { Log.d("CurrentlyReadingFragment", "Book: ${it.title}, Status: ${it.status}") }
+//            bookAdapter.updateBooks(books)
+
+            originalBooks = myDbHelper.getBooksByAccountId(accountId, "Currently Reading")
+            bookAdapter.updateBooks(originalBooks)
+
         } else {
             // Handle the case where accountId is not found
             Toast.makeText(context, "No account ID found", Toast.LENGTH_SHORT).show()
@@ -125,22 +141,101 @@ class CurrentlyReadingFragment : Fragment() {
 
         }
 
-        //used to update fragment based on newly saved books
-//        viewModel.books.observe(viewLifecycleOwner) { books ->
-//            bookAdapter.updateBooks(books)
-//        }
+    }
 
-        // Observe books in ViewModel
-//        viewModel.books.observe(viewLifecycleOwner) { books ->
-//            val currentlyReadingBooks = books.filter { it.status == "Currently Reading" }
-//            Log.d("CurrentlyReadingFragment", "Currently Reading Books observed: ${currentlyReadingBooks.size}")
-//            currentlyReadingBooks.forEach { Log.d("CurrentlyReadingFragment", "Book: ${it.title}, Status: ${it.status}") }
-//            bookAdapter.updateBooks(currentlyReadingBooks)
-//        }
+    private fun showFilterDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        val inflater = requireActivity().layoutInflater
+        val view = inflater.inflate(R.layout.dialog_filter, null)
+
+        // Initialize views in the dialog
+        val spinnerCategories: Spinner = view.findViewById(R.id.spinnerCategories)
+        val buttonSave: Button = view.findViewById(R.id.buttonSave)
+        val buttonReset: Button = view.findViewById(R.id.buttonReset)
+        val buttonCancel: Button = view.findViewById(R.id.buttonCancel)
+
+        // Use dynamic accountId from SharedPreferences
+        if (accountId == -1L) {
+            Log.e("CRFragment", "Invalid account ID")
+            return
+        }
+
+        // Retrieve categories only within the "Currently Reading" status
+        val currentlyReadingBooks = myDbHelper.getBooksByAccountId(accountId, "Currently Reading")
+        val categories = currentlyReadingBooks.map { it.category }.distinct()
+
+//        val categories = myDbHelper.getCategoriesByAccountId(accountId)
+
+        if (categories.isEmpty()) {
+            Log.d("CRFragment", "No categories found for currently reading books")
+            return
+        }
+
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+        spinnerCategories.adapter = adapter
+
+        builder.setView(view)
+
+        if (categories.isEmpty()) {
+            Log.d("CRFragment", "No categories found for account ID: $accountId")
+            return
+        }
+
+        // Create and show the dialog
+        val dialog = builder.create()
+        dialog.show()
+
+        buttonSave.setOnClickListener {
+            val selectedCategory = spinnerCategories.selectedItem as? String
+            applyCategoryFilter(selectedCategory)
+            dialog.dismiss()
+        }
+
+        buttonReset.setOnClickListener {
+            spinnerCategories.setSelection(0) // Reset to default
+            resetFilters()
+            dialog.dismiss()
+        }
+
+        buttonCancel.setOnClickListener {
+            dialog.dismiss()
+        }
 
     }
-//    fun updateBooks(books: List<Book>) {
-//        bookAdapter.updateBooks(books)
-//    }
+
+    private fun applyCategoryFilter(category: String?) {
+        Log.d("CRFragment", "Applying category filter: $category")
+
+        // Get current books from the adapter
+//        val currentBooks = bookAdapter.getCurrentBooks()
+
+        // Apply category filter
+        val filteredBooks = if (category.isNullOrEmpty()) {
+            originalBooks
+        } else {
+            originalBooks.filter { it.category == category }
+        }
+
+        Log.d("CRFragment", "Filtered books count: ${filteredBooks.size}")
+
+        // Update the adapter with filtered books
+        bookAdapter.updateBooks(filteredBooks)
+    }
+
+    private fun resetFilters() {
+        Log.d("CRFragment", "Resetting filters")
+
+        // Retrieve books again to restore the original state
+        if (accountId != -1L) {
+            val originalBooks = myDbHelper.getBooksByAccountId(accountId, "Currently Reading")
+            bookAdapter.updateBooks(originalBooks)
+        } else {
+            Log.e("CRFragment", "Account ID not found, cannot reset filters")
+        }
+    }
+
+
+
 
 }

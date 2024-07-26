@@ -7,9 +7,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import org.mindrot.jbcrypt.BCrypt
 
 /*
 
@@ -670,6 +667,7 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
         return db.insert(DbReferences.BOOK_TABLE_NAME, null, contentValues)
     }
 
+
     @Synchronized
     fun getBooksByAccountId(accountId: Long, status: String? = null): List<Book> {
         val database = this.readableDatabase
@@ -712,9 +710,11 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
                 val rating = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_RATING))
                 val status = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_STATUS))
                 val category = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_CATEGORY))
-                val retrievedAccountId = cursor.getLong(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_ACCOUNT_ID))
+                val review = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_REVIEW)   ) ?: ""
+                    val retrievedAccountId = cursor.getLong(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_ACCOUNT_ID))
+               // val retrievedAccountId = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_ACCOUNT_ID))
 
-                val book = Book(id, title, author, image, rating, status, category, retrievedAccountId)
+                val book = Book(id, title, author, image, rating, status, category, review, retrievedAccountId)
                 books.add(book)
             } while (cursor.moveToNext())
         }
@@ -817,6 +817,27 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
             cursor.close()
         }
     }
+
+    fun updateBook(book: com.mobdeve.s12.fallarme.sophia.bookbuddy.collection.Book): Int {
+        val db = writableDatabase
+        val contentValues = ContentValues().apply {
+            put(DbReferences.COLUMN_NAME_BOOK_TITLE, book.title)
+            put(DbReferences.COLUMN_NAME_BOOK_AUTHOR, book.author)
+            put(DbReferences.COLUMN_NAME_BOOK_IMAGE, book.image)
+            put(DbReferences.COLUMN_NAME_BOOK_STATUS, book.status)
+            put(DbReferences.COLUMN_NAME_BOOK_CATEGORY, book.category)
+            put(DbReferences.COLUMN_NAME_RATING, book.rating)
+            put("review", book.review) // Assuming you have a column for review
+        }
+
+        return db.update(
+            DbReferences.BOOK_TABLE_NAME,
+            contentValues,
+            "${DbReferences._ID} = ?",
+            arrayOf(book.id)
+        )
+    }
+
 
 
 

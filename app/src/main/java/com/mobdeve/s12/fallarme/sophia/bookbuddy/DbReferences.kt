@@ -1,7 +1,7 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy
 
 object DbReferences {
-    const val DATABASE_VERSION = 2
+    const val DATABASE_VERSION = 3
     const val DATABASE_NAME = "books.db"
 
     const val TABLE_NAME = "accounts"
@@ -20,6 +20,7 @@ object DbReferences {
     const val COLUMN_NAME_BOOK_CATEGORY = "category"
     const val COLUMN_NAME_RATING = "rating"
     const val COLUMN_NAME_ACCOUNT_ID = "accountId"  // Foreign key to link to accounts table
+    const val COLUMN_NAME_REVIEW = "review" // review
 
     const val _ID = "_id"
 
@@ -35,6 +36,7 @@ object DbReferences {
         )
     """
 
+
     const val CREATE_BOOK_TABLE_STATEMENT = """
         CREATE TABLE $BOOK_TABLE_NAME (
             $_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,6 +46,7 @@ object DbReferences {
             $COLUMN_NAME_BOOK_STATUS TEXT,
             $COLUMN_NAME_BOOK_CATEGORY TEXT,
             $COLUMN_NAME_RATING TEXT,
+            $COLUMN_NAME_REVIEW TEXT, 
             $COLUMN_NAME_ACCOUNT_ID INTEGER,
             FOREIGN KEY($COLUMN_NAME_ACCOUNT_ID) REFERENCES $TABLE_NAME($_ID)
         )
