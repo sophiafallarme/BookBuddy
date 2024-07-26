@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
 import com.bumptech.glide.Glide
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.Book
+import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
 
 //class AllAdapter(private val data: List<Book>) : RecyclerView.Adapter<AllAdapter.BookViewHolder>() {
 //
@@ -53,9 +53,11 @@ class AllAdapter(private var books: List<com.mobdeve.s12.fallarme.sophia.bookbud
 //        }
 //    }
 
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.bookrecyclerview_layout, parent, false)
-        return BookViewHolder(view)
+        return BookViewHolder(view, onItemClickListener)
     }
 
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
@@ -66,6 +68,19 @@ class AllAdapter(private var books: List<com.mobdeve.s12.fallarme.sophia.bookbud
 //        holder.tvwAuthor.text = book.author
 //        holder.tvwCategory.text = book.category
 //        Glide.with(itemView.context).load(book.image).into(imgBookCover)
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.onItemClick(book)
+        }
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(book: Book)
+    }
+
+    private var onItemClickListener: OnItemClickListener? = null
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        onItemClickListener = listener
     }
 
     override fun getItemCount(): Int = books.size
@@ -80,13 +95,19 @@ class AllAdapter(private var books: List<com.mobdeve.s12.fallarme.sophia.bookbud
         return books
     }
 
-    class BookViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class BookViewHolder(itemView: View, private val onItemClickListener: OnItemClickListener?) : RecyclerView.ViewHolder(itemView) {
         val imgBookCover: ImageView = itemView.findViewById(R.id.imgvwBookCover)
         val tvwCategory: TextView = itemView.findViewById(R.id.tvwCategory)
         val tvwBookTitle: TextView = itemView.findViewById(R.id.tvwBookTitle)
         val tvwAuthor: TextView = itemView.findViewById(R.id.tvwAuthor)
 
+
+
+
+
         fun bind(book: Book) {
+
+
             tvwBookTitle.text = book.title
             tvwAuthor.text = book.author
             tvwCategory.text = book.category
@@ -95,3 +116,5 @@ class AllAdapter(private var books: List<com.mobdeve.s12.fallarme.sophia.bookbud
         }
     }
 }
+
+

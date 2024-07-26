@@ -41,6 +41,7 @@ class BookAdapter(
         private val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
         private val authorTextView: TextView = itemView.findViewById(R.id.authorTextView)
         private val ratingTextView: TextView = itemView.findViewById(R.id.ratingTextView)
+        private val reviewTextView: TextView = itemView.findViewById(R.id.ratingTextView)
         private val coverImageView: ImageView = itemView.findViewById(R.id.coverImageView)
         private val saveButton: LinearLayout = itemView.findViewById(R.id.saveBookBtn)
 
@@ -48,6 +49,7 @@ class BookAdapter(
             titleTextView.text = book.title
             authorTextView.text = book.author
             ratingTextView.text = book.rating
+            reviewTextView.text = book.review ?: "No review" // Handle null reviews
             Glide.with(itemView.context)
                 .load(book.image)
                 .into(coverImageView)
