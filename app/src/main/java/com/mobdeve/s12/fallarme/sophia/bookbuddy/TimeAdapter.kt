@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.mobdeve.s12.fallarme.sophia.bookbuddy.databinding.ItemTimeBinding
 
 class TimeAdapter(
     private val times: MutableList<String>,
