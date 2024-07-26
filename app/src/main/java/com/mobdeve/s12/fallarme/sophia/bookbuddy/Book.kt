@@ -23,5 +23,5 @@ data class Book(
    // val category: String
     val status: String = "",
     val category: String = "",
-    val review: String = "",
+    val accountId: Long
 )

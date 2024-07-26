@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
+    id ("kotlin-parcelize")
 }
 
 android {
@@ -52,7 +53,7 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation ("androidx.gridlayout:gridlayout:1.0.0")
-//    implementation("com.google:android.material:material:1.4.0")
+//    implementation("com.google.android.material:material:1.8.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -61,4 +62,5 @@ dependencies {
     implementation ("org.mindrot:jbcrypt:0.4")
     implementation ("com.github.bumptech.glide:glide:4.13.2")
     kapt ("com.github.bumptech.glide:compiler:4.13.2")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.13.2")
 }

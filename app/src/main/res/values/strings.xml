@@ -5,6 +5,17 @@
     <string name="title_notifications">Schedule</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="schedule">Schedule</string>
+    <string name="bookbuddy_logo">BookBuddy Logo</string>
+    <string name="how_often_would_you_like_to_be_notified">How often would you like to be notified?</string>
+    <string name="repeat">Repeat</string>
+    <string name="hours">Hours</string>
+    <string name="select_days">Select Days</string>
+    <string name="select_hours">Select Hours</string>
+    <string name="no_days_selected">No days selected</string>
+    <string name="no_hours_selected">No hours selected</string>
+    <string name="delete">Delete</string>
+    <string name="_12_00_am">12:00 AM</string>
 
 
     <string-array name="status_array">
@@ -21,4 +32,10 @@
         <item>Fantasy</item> -->
         <item>Add New Category</item> <!-- Add this option -->
     </string-array>
+
+    <string-array name="am_pm_values">
+        <item>AM</item>
+        <item>PM</item>
+    </string-array>
+
 </resources>
