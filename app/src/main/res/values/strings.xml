@@ -16,6 +16,13 @@
     <string name="no_hours_selected">No hours selected</string>
     <string name="delete">Delete</string>
     <string name="_12_00_am">12:00 AM</string>
+    <string name="selected_times">Selected Times: %1$s</string>
+    <string name="_00_00_am">00:00 AM</string>
+    <string name="everyday">Everyday</string>
+    <string name="selected_days">Selected days: %1$s</string>
+    <string name="none">None</string>
+    <string name="delete_time">Delete Time</string>
+    <string name="add_time">Add time</string>
 
 
     <string-array name="status_array">

@@ -4,22 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
+import com.mobdeve.s12.fallarme.sophia.bookbuddy.TimeAdapter
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.databinding.FragmentNotificationsBinding
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.databinding.HoursRepeatBinding
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.databinding.ScheduleRepeatBinding
-import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
-import com.mobdeve.s12.fallarme.sophia.bookbuddy.TimeAdapter
 
 class NotificationsFragment : Fragment() {
 
@@ -32,33 +26,15 @@ class NotificationsFragment : Fragment() {
     private val selectedTimes = mutableListOf<String>()
     private lateinit var timeAdapter: TimeAdapter
 
- /*   override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val notificationsViewModel =
-            ViewModelProvider(this).get(NotificationsViewModel::class.java)
-
-        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-        return root
-    }*/
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        notificationsViewModel = ViewModelProvider(this).get(NotificationsViewModel::class.java)
+        notificationsViewModel = ViewModelProvider(this)[NotificationsViewModel::class.java]
 
         timeAdapter = TimeAdapter(selectedTimes) { time ->
             removeTime(time)
@@ -66,13 +42,13 @@ class NotificationsFragment : Fragment() {
         binding.recyclerViewTimes.adapter = timeAdapter
         binding.recyclerViewTimes.layoutManager = LinearLayoutManager(requireContext())
 
-        notificationsViewModel.repeatedDays.observe(viewLifecycleOwner, Observer { days ->
+        notificationsViewModel.repeatedDays.observe(viewLifecycleOwner) { days ->
             binding.daysPopup.text = days
-        })
+        }
 
-        notificationsViewModel.repeatedHours.observe(viewLifecycleOwner, Observer { text ->
+        notificationsViewModel.repeatedHours.observe(viewLifecycleOwner) { text ->
             binding.hoursPopup.text = text
-        })
+        }
 
         binding.daysPopup.setOnClickListener {
             showSchedulePopup()
@@ -103,14 +79,12 @@ class NotificationsFragment : Fragment() {
             if (dialogBinding.checkBoxSunday.isChecked) selectedDays.add("Sunday")
 
             val daysText = when {
-                selectedDays.size == 7 -> "Everyday"
-                selectedDays.isEmpty() -> "No days selected"
+                selectedDays.size == 7 -> getString(R.string.everyday)
+                selectedDays.isEmpty() -> getString(R.string.no_days_selected)
                 else -> selectedDays.joinToString(", ")
             }
             notificationsViewModel.setSelectedDays(daysText)
-
-            // Example of updating additional text
-            Toast.makeText(requireContext(), "Selected days: $daysText", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.selected_days, daysText), Toast.LENGTH_SHORT).show()
         }
 
         builder.setNegativeButton("Cancel", null)
@@ -130,8 +104,7 @@ class NotificationsFragment : Fragment() {
             val amPm = if (dialogBinding.numberPickerAmPm.value == 0) "AM" else "PM"
 
             val timeText = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} $amPm"
-
-            notificationsViewModel.setAdditionalText(timeText)
+            onTimeSelected(timeText)
         }
 
         builder.setNegativeButton("Cancel", null)
@@ -139,14 +112,12 @@ class NotificationsFragment : Fragment() {
     }
 
     private fun initializeNumberPickers(binding: HoursRepeatBinding) {
-        // Set up NumberPicker for hours
         binding.numberPickerHour.apply {
             minValue = 1
             maxValue = 12
             wrapSelectorWheel = true
         }
 
-        // Set up NumberPicker for minutes
         binding.numberPickerMinute.apply {
             minValue = 0
             maxValue = 59
@@ -154,7 +125,6 @@ class NotificationsFragment : Fragment() {
             displayedValues = getFormattedMinutes()
         }
 
-        // Set up NumberPicker for AM/PM
         binding.numberPickerAmPm.apply {
             minValue = 0
             maxValue = 1
@@ -167,14 +137,17 @@ class NotificationsFragment : Fragment() {
         if (selectedTimes.contains(timeText)) return // Prevent duplicate times
 
         selectedTimes.add(timeText)
-        timeAdapter.notifyDataSetChanged() // Refresh RecyclerView
-        updateTimesTextView()
+        timeAdapter.notifyItemInserted(selectedTimes.size - 1) // Efficiently notify about new item
+        checkAndUpdateHoursPopupVisibility()
     }
 
     private fun removeTime(timeText: String) {
-        selectedTimes.remove(timeText)
-        timeAdapter.notifyDataSetChanged() // Refresh RecyclerView
-        updateTimesTextView()
+        val index = selectedTimes.indexOf(timeText)
+        if (index != -1) {
+            selectedTimes.removeAt(index)
+            timeAdapter.notifyItemRemoved(index) // Efficiently notify about removed item
+            checkAndUpdateHoursPopupVisibility()
+        }
     }
 
     private fun getFormattedMinutes(): Array<String> {
@@ -183,9 +156,12 @@ class NotificationsFragment : Fragment() {
         }
     }
 
-    private fun updateTimesTextView() {
-        val timesText = if (selectedTimes.isEmpty()) "None" else selectedTimes.joinToString(", ")
-        binding.textHours.text = "Selected Times: $timesText"
+    private fun checkAndUpdateHoursPopupVisibility() {
+        if (selectedTimes.isEmpty()) {
+            binding.hoursPopup.visibility = View.VISIBLE
+        } else {
+            binding.hoursPopup.visibility = View.GONE
+        }
     }
 
     override fun onDestroyView() {
