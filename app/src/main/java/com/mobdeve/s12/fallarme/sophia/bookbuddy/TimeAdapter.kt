@@ -33,4 +33,21 @@ class TimeAdapter(
     override fun getItemCount(): Int {
         return times.size
     }
+
+    // Method to add a time to the list
+    fun addTime(time: String) {
+        if (!times.contains(time)) {
+            times.add(time)
+            notifyItemInserted(times.size - 1)
+        }
+    }
+
+    // Method to remove a time from the list
+    fun removeTime(time: String) {
+        val position = times.indexOf(time)
+        if (position != -1) {
+            times.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
 }

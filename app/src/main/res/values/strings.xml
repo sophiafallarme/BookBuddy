@@ -23,6 +23,9 @@
     <string name="none">None</string>
     <string name="delete_time">Delete Time</string>
     <string name="add_time">Add time</string>
+    <string name="channel_name">Reading Reminder</string>
+    <string name="channel_description">Channel for reading reminders</string>
+
 
 
     <string-array name="status_array">
