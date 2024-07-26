@@ -347,7 +347,6 @@ class NotificationsFragment : Fragment() {
                 View.GONE
             }
         }
-
     }
 
     override fun onDestroyView() {
