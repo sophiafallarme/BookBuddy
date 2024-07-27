@@ -818,7 +818,8 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
         }
     }
 
-    fun updateBook(book: com.mobdeve.s12.fallarme.sophia.bookbuddy.collection.Book): Int {
+//    fun updateBook(book: com.mobdeve.s12.fallarme.sophia.bookbuddy.collection.Book): Int {
+fun updateBook(book: Book): Int {
         val db = writableDatabase
         val contentValues = ContentValues().apply {
             put(DbReferences.COLUMN_NAME_BOOK_TITLE, book.title)

@@ -28,6 +28,8 @@
             </intent-filter>
         </activity>
 
+    <activity android:name=".BookDetailsActivity" />
+
         <activity
             android:name=".RegisterActivity"
             android:exported="true">

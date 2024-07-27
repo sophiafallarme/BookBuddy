@@ -2,6 +2,7 @@ package com.mobdeve.s12.fallarme.sophia.bookbuddy.collection
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.Book
+import com.mobdeve.s12.fallarme.sophia.bookbuddy.BookDetailsActivity
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.BookViewModel
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.MyDbHelper
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
@@ -89,6 +91,16 @@ class FinishedFragment : Fragment() {
             Log.e("Finished Fragment", "Account ID not found in SharedPreferences")
 
         }
+
+        // Set the click listener for items in the RecyclerView
+        bookAdapter.setOnItemClickListener(object : FinishedAdapter.OnItemClickListener {
+            override fun onItemClick(book: Book) {
+                Log.d("AllFragment", "Clicked book: ${book.title}")
+                val intent = Intent(requireContext(), BookDetailsActivity::class.java)
+                intent.putExtra("book", book)  // Pass the clicked book to BookDetailsActivity
+                startActivity(intent)
+            }
+        })
 
     }
 

@@ -33,24 +33,13 @@ class AllFragment : Fragment() {
     private var accountId: Long = -1L
     private var originalBooks: List<Book> = emptyList()
 
-
-
-
-
-
-
-    /*override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //Initialize DB Helper
         myDbHelper = MyDbHelper(requireContext())
         Log.d("AllFragment", "onCreate called")
-
-
-
-
     }
 
-     */
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -93,6 +82,7 @@ class AllFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("AllFragment", "onViewCreated called")
 
         // Retrieve accountId from SharedPreferences
         val sharedPreferences = requireContext().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
@@ -113,6 +103,7 @@ class AllFragment : Fragment() {
         // Set the click listener for items in the RecyclerView
         bookAdapter.setOnItemClickListener(object : AllAdapter.OnItemClickListener {
             override fun onItemClick(book: Book) {
+                Log.d("AllFragment", "Clicked book: ${book.title}")
                 val intent = Intent(requireContext(), BookDetailsActivity::class.java)
                 intent.putExtra("book", book)  // Pass the clicked book to BookDetailsActivity
                 startActivity(intent)
