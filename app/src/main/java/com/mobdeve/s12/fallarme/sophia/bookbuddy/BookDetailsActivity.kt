@@ -1,6 +1,7 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
@@ -11,6 +12,7 @@ import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 
 //import com.mobdeve.s12.fallarme.sophia.bookbuddy.collection.Book
@@ -107,5 +109,14 @@ class BookDetailsActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Failed to update book", Toast.LENGTH_SHORT).show()
         }
+
+
+        // Send a broadcast indicating a book update
+        val intent = Intent("com.mobdeve.s12.fallarme.sophia.bookbuddy.BOOK_UPDATED")
+        intent.putExtra("bookId", updatedBook.id) // Pass additional data if needed
+        sendBroadcast(intent)
+
+        finish() // Close the activity
+
     }
 }

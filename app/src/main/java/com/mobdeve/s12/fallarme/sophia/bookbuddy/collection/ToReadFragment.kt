@@ -1,8 +1,10 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy.collection
 
 import android.app.AlertDialog
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -32,13 +34,31 @@ class ToReadFragment : Fragment() {
     private var accountId: Long = -1L
     private var originalBooks: List<Book> = emptyList()
 
+    private val bookUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            // Refresh the books list
+            refreshBooksList()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //Initialize DB Helper
         myDbHelper = MyDbHelper(requireContext())
         Log.d("To Read Fragment", "onCreate called")
 
+        // Register the receiver for book updates
+        val filter = IntentFilter("com.mobdeve.s12.fallarme.sophia.bookbuddy.BOOK_UPDATED")
+        requireContext().registerReceiver(bookUpdateReceiver, filter)
+
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Unregister the receiver
+        requireContext().unregisterReceiver(bookUpdateReceiver)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -98,6 +118,12 @@ class ToReadFragment : Fragment() {
                 startActivity(intent)
             }
         })
+    }
+
+    private fun refreshBooksList() {
+        val books = myDbHelper.getBooksByAccountId(accountId).filter { it.status == "Currently Reading" }
+        Log.d("CurrentlyReadingFragment", "Currently Reading books refreshed: ${books.size}")
+        bookAdapter.updateBooks(books)
     }
 
     private fun showFilterDialog() {
