@@ -1,5 +1,6 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy.collection
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,6 +61,7 @@ class AllAdapter(private var books: List<com.mobdeve.s12.fallarme.sophia.bookbud
         return BookViewHolder(view, onItemClickListener)
     }
 
+    /*
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
         var book = books[position]
         holder.bind(book)
@@ -72,6 +74,18 @@ class AllAdapter(private var books: List<com.mobdeve.s12.fallarme.sophia.bookbud
             onItemClickListener?.onItemClick(book)
         }
     }
+
+     */
+
+    override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
+        val book = books[position]
+        holder.bind(book)
+        holder.itemView.setOnClickListener {
+            Log.d("AllAdapter", "Book clicked: ${book.title}, Position: $position")
+            onItemClickListener?.onItemClick(book)
+        }
+    }
+
 
     interface OnItemClickListener {
         fun onItemClick(book: Book)

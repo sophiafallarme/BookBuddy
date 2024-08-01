@@ -1,12 +1,15 @@
-package com.mobdeve.s12.fallarme.sophia.bookbuddy
+package com.mobdeve.s12.fallarme.sophia.bookbuddy.collection
+
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.mobdeve.s12.fallarme.sophia.bookbuddy.collection.Book
+import com.mobdeve.s12.fallarme.sophia.bookbuddy.MyDbHelper
+import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
 
 //import kotlinx.coroutines.flow.internal.NoOpContinuation.context
 
@@ -15,6 +18,30 @@ class BookDetailsActivity : AppCompatActivity() {
     private lateinit var book: Book
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        /*  super.onCreate(savedInstanceState)
+          setContentView(R.layout.book_layout)
+
+          // Initialize DB Helper
+          myDbHelper = MyDbHelper(this)
+
+          // Retrieve book data from the intent
+        //  book = intent.getParcelableExtra<Book>("book")!!
+
+          book = intent.getSerializableExtra("book") as Book
+
+
+          // Populate the views with book data
+          findViewById<EditText>(R.id.bookReviewTv).setText(book.review ?: "")
+          findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView2).setText(book.status)
+          findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView).setText(book.category)
+
+          // Set up save button click listener
+          findViewById<Button>(R.id.saveBtn).setOnClickListener {
+              saveBookDetails()
+          }
+
+         */
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.book_layout)
 
@@ -22,10 +49,8 @@ class BookDetailsActivity : AppCompatActivity() {
         myDbHelper = MyDbHelper(this)
 
         // Retrieve book data from the intent
-      //  book = intent.getParcelableExtra<Book>("book")!!
-
         book = intent.getSerializableExtra("book") as Book
-
+        Log.d("BookDetailsActivity", "Received book: ${book.title}, ${book.author}")
 
         // Populate the views with book data
         findViewById<EditText>(R.id.bookReviewTv).setText(book.review ?: "")
