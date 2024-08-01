@@ -1,20 +1,15 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.collection.AllFragment
-import com.mobdeve.s12.fallarme.sophia.bookbuddy.collection.ViewPagerAdapter
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -47,6 +42,7 @@ class MainActivity : AppCompatActivity() {
             finish()
             return
         }
+        // here
 
         Log.d("MainActivity", "Received account_id: $accountId")
 
