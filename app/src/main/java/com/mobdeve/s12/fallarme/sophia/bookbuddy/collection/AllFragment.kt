@@ -1,8 +1,10 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy.collection
 
 import android.app.AlertDialog
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,12 +20,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.Book
+import com.mobdeve.s12.fallarme.sophia.bookbuddy.BookDetailsActivity
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.BookViewModel
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.MyDbHelper
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
 
 
 class AllFragment : Fragment() {
+
     private lateinit var bookAdapter: AllAdapter
     private lateinit var myDbHelper: MyDbHelper
     private lateinit var recyclerView: RecyclerView
@@ -33,15 +37,30 @@ class AllFragment : Fragment() {
     private var originalBooks: List<Book> = emptyList()
 
 
-    /*override fun onCreate(savedInstanceState: Bundle?) {
+    private val bookUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            // Refresh the books list
+            refreshBooksList()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //Initialize DB Helper
         myDbHelper = MyDbHelper(requireContext())
         Log.d("AllFragment", "onCreate called")
 
+        // Register the receiver for book updates
+        val filter = IntentFilter("com.mobdeve.s12.fallarme.sophia.bookbuddy.BOOK_UPDATED")
+        requireContext().registerReceiver(bookUpdateReceiver, filter)
     }
 
-     */
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Unregister the receiver
+        requireContext().unregisterReceiver(bookUpdateReceiver)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -83,7 +102,8 @@ class AllFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-       /* super.onViewCreated(view, savedInstanceState)
+        super.onViewCreated(view, savedInstanceState)
+        Log.d("AllFragment", "onViewCreated called")
 
         // Retrieve accountId from SharedPreferences
         val sharedPreferences = requireContext().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
@@ -104,46 +124,20 @@ class AllFragment : Fragment() {
         // Set the click listener for items in the RecyclerView
         bookAdapter.setOnItemClickListener(object : AllAdapter.OnItemClickListener {
             override fun onItemClick(book: Book) {
+                Log.d("AllFragment", "Clicked book: ${book.title}")
                 val intent = Intent(requireContext(), BookDetailsActivity::class.java)
                 intent.putExtra("book", book)  // Pass the clicked book to BookDetailsActivity
                 startActivity(intent)
             }
         })
-
-        */
-
-        super.onViewCreated(view, savedInstanceState)
-
-        // Retrieve accountId from SharedPreferences
-        val sharedPreferences = requireContext().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
-        accountId = sharedPreferences.getLong("accountId", -1L)
-        Log.d("AllFragment", "Retrieved accountId: $accountId")
-
-        // Retrieve books and update adapter
-        if (accountId != -1L) {
-            originalBooks = myDbHelper.getBooksByAccountId(accountId)
-            Log.d("AllFragment", "Books retrieved: ${originalBooks.size}")
-            bookAdapter.updateBooks(originalBooks)
-        } else {
-            // Handle the case where accountId is not found
-            Toast.makeText(context, "No account ID found", Toast.LENGTH_SHORT).show()
-            Log.e("AllFragment", "Account ID not found in SharedPreferences")
-        }
-
-        bookAdapter.setOnItemClickListener(object : AllAdapter.OnItemClickListener {
-            override fun onItemClick(book: Book) {
-                Log.d("AllFragment", "Book clicked: ${book.title}")
-                val intent = Intent(requireContext(), BookDetailsActivity::class.java)
-                intent.putExtra("book", book)  // Pass the clicked book to BookDetailsActivity
-                startActivity(intent)
-            }
-        })
-
-
 
     }
 
-
+    private fun refreshBooksList() {
+        val books = myDbHelper.getBooksByAccountId(accountId)
+        Log.d("AllFragment", "Books refreshed: ${books.size}")
+        bookAdapter.updateBooks(books)
+    }
 
     private fun showFilterDialog() {
 

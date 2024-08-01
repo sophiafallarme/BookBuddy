@@ -2,65 +2,44 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/bookCoverImg"
-        android:layout_width="195dp"
-        android:layout_height="263dp"
-        android:layout_marginTop="100dp"
-        app:layout_constraintBottom_toTopOf="@+id/statusDrpdwn"
+        android:layout_width="229dp"
+        android:layout_height="319dp"
+        android:layout_marginTop="56dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/book4" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/statusDrpdwn"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-        android:layout_width="0dp"
+    <Spinner
+        android:id="@+id/spinner_status"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="@+id/bookCoverImg"
-        app:layout_constraintStart_toStartOf="@+id/bookCoverImg"
-        app:layout_constraintTop_toBottomOf="@+id/bookCoverImg">
+        android:layout_marginTop="28dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bookCoverImg" />
 
-        <AutoCompleteTextView
-            android:id="@+id/autoCompleteTextView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="none"
-            android:text="Status" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/categoryDrpDwn"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-        android:layout_width="0dp"
+    <Spinner
+        android:id="@+id/spinner_category"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        app:layout_constraintEnd_toEndOf="@+id/statusDrpdwn"
-        app:layout_constraintStart_toStartOf="@+id/statusDrpdwn"
-        app:layout_constraintTop_toBottomOf="@+id/statusDrpdwn">
-
-        <AutoCompleteTextView
-            android:id="@+id/autoCompleteTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="none"
-            android:text="Category" />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:layout_marginTop="72dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bookCoverImg" />
 
     <EditText
         android:id="@+id/bookReviewTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
         android:layout_weight="1"
         android:ems="10"
@@ -68,11 +47,7 @@
         android:minHeight="48dp"
         android:text="Review..."
         app:layout_constraintBottom_toTopOf="@+id/saveBtn"
-        app:layout_constraintEnd_toEndOf="@+id/categoryDrpDwn"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/categoryDrpDwn"
-        app:layout_constraintTop_toBottomOf="@+id/categoryDrpDwn"
-        app:layout_constraintVertical_bias="1.0" />
+        tools:layout_editor_absoluteX="16dp" />
 
     <Button
         android:id="@+id/saveBtn"
