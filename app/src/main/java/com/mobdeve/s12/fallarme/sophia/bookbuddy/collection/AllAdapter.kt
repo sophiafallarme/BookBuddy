@@ -67,7 +67,19 @@ class AllAdapter(private var books: List<com.mobdeve.s12.fallarme.sophia.bookbud
             tvwCategory.text = book.category
             // Load image using an image loading library like Glide or Picasso
             Glide.with(itemView.context).load(book.image).into(imgBookCover)
+            adjustTextSize(book.title)
 
+        }
+
+        private fun adjustTextSize(title: String) {
+            val maxLength = 50 // define the length threshold
+            val minTextSize = 14f
+            val maxTextSize = 15f
+
+            tvwBookTitle.textSize = when {
+                title.length > maxLength -> minTextSize
+                else -> maxTextSize
+            }
         }
     }
 }

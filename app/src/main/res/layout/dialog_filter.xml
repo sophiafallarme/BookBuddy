@@ -1,8 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:backgroundTint="#A49898">
+
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="409dp"-->
+    <!--        android:layout_height="210dp"-->
+    <!--        android:orientation="vertical"-->
+    <!--        android:padding="16dp"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent">-->
+
+    <!--        <Spinner-->
+    <!--            android:id="@+id/spinnerCategories"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content" />-->
+
+    <!--        <LinearLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_marginTop="16dp"-->
+    <!--            android:orientation="horizontal">-->
+
+    <!--            <Button-->
+    <!--                android:id="@+id/buttonSave"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:layout_weight="1"-->
+    <!--                android:text="Save" />-->
+
+    <!--            <Button-->
+    <!--                android:id="@+id/buttonReset"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:layout_weight="1"-->
+    <!--                android:text="Reset" />-->
+
+    <!--        </LinearLayout>-->
+    <!--    </LinearLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,38 +52,62 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Spinner
-            android:id="@+id/spinnerCategories"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nourd_semi_bold"
+            android:paddingBottom="16dp"
+            android:text="Select Categories"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCategories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:overScrollMode="never"
+            android:scrollbars="none" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:gravity="end"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/buttonSave"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Save" />
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:backgroundTint="#787272"
+                android:textAllCaps="false"
+                android:text="Save Changes"
+                android:textSize="13sp"
+                app:rippleColor="#673AB7"
+                android:fontFamily="@font/nourd_regular"/>
 
             <Button
                 android:id="@+id/buttonReset"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Reset" />
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="#787272"
+                android:textAllCaps="false"
+                android:text="Reset"
+                android:textSize="13sp"
+                android:fontFamily="@font/nourd_regular" />
 
-            <Button
-                android:id="@+id/buttonCancel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Cancel" />
+            <!--            <Button-->
+            <!--                android:id="@+id/buttonCancel"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginStart="8dp"-->
+            <!--                android:text="Cancel" />-->
         </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
