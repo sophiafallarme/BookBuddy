@@ -20,13 +20,15 @@
         android:layout_height="wrap_content"
         android:paddingBottom="8dp"
         android:text="Select Status"
-        android:textColor="#000000" />
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <Spinner
         android:id="@+id/spinner_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        android:background="@drawable/custom_spinner"
         android:entries="@array/status_array"
         android:minHeight="48dp" />
 
@@ -36,12 +38,14 @@
         android:paddingTop="16dp"
         android:paddingBottom="8dp"
         android:text="Select Category"
-        android:textColor="#000000" />
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <Spinner
         android:id="@+id/spinner_category"
         android:layout_width="match_parent"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        android:background="@drawable/custom_spinner"
         android:layout_height="wrap_content"
         android:minHeight="48dp" />
 
@@ -49,9 +53,12 @@
         android:id="@+id/edittext_new_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/border_outline"
         android:hint="Enter new category"
-        android:visibility="gone"
-        android:inputType="text"/>
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:visibility="visible" />
 
     <!-- Add a horizontal LinearLayout for buttons -->
     <LinearLayout
