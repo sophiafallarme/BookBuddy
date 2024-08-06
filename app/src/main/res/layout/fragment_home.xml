@@ -29,8 +29,8 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/nourd_semi_bold"
         android:layout_marginTop="68dp"
+        android:fontFamily="@font/nourd_semi_bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,29 +39,29 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/nourd_semi_bold"
             android:text="All"
-            android:fontFamily="@font/nourd_semi_bold"
             android:textAllCaps="false" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/nourd_semi_bold"
             android:text="Currently Reading"
-            android:fontFamily="@font/nourd_semi_bold"
             android:textAllCaps="false" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/nourd_semi_bold"
             android:text="To Read"
-            android:fontFamily="@font/nourd_semi_bold"
             android:textAllCaps="false" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Finished"
             android:fontFamily="@font/nourd_semi_bold"
+            android:text="Finished"
             android:textAllCaps="false" />
 
     </com.google.android.material.tabs.TabLayout>
@@ -76,19 +76,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tab_layout" />
 
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/fabFilter"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:layout_marginEnd="24dp"-->
-<!--        android:clickable="true"-->
-<!--        android:contentDescription="TODO"-->
-<!--        android:src="@drawable/filter"-->
-<!--        app:backgroundTint="#FEFEFE"-->
-<!--        app:fabCustomSize="50dp"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:rippleColor="#673AB7" />-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabFilter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:clickable="true"
+        android:contentDescription="TODO"
+        android:src="@drawable/filter"
+        app:backgroundTint="#FEFEFE"
+        app:fabCustomSize="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:rippleColor="#673AB7" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

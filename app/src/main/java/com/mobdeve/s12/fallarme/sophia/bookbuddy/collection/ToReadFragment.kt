@@ -80,9 +80,9 @@ class ToReadFragment : Fragment() {
         //used to update fragment based on newly saved books
         viewModel = ViewModelProvider(requireActivity()).get(BookViewModel::class.java)
 
-        view.findViewById<FloatingActionButton>(R.id.fabFilter).setOnClickListener {
-            showFilterDialog()
-        }
+//        view.findViewById<FloatingActionButton>(R.id.fabFilter).setOnClickListener {
+//            showFilterDialog()
+//        }
 
         return view
 
@@ -122,8 +122,8 @@ class ToReadFragment : Fragment() {
     }
 
     private fun refreshBooksList() {
-        val books = myDbHelper.getBooksByAccountId(accountId).filter { it.status == "Currently Reading" }
-        Log.d("CurrentlyReadingFragment", "Currently Reading books refreshed: ${books.size}")
+        val books = myDbHelper.getBooksByAccountId(accountId).filter { it.status == "To Read" }
+        Log.d("To Read Fragment", "To Read books refreshed: ${books.size}")
         bookAdapter.updateBooks(books)
     }
 

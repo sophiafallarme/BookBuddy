@@ -82,9 +82,9 @@ class CurrentlyReadingFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(BookViewModel::class.java)
 
         // Set up FAB to open the filter dialog
-        view.findViewById<FloatingActionButton>(R.id.fabFilter).setOnClickListener {
-            showFilterDialog()
-        }
+//        view.findViewById<FloatingActionButton>(R.id.fabFilter).setOnClickListener {
+//            showFilterDialog()
+//        }
 
 
         return view
@@ -125,11 +125,6 @@ class CurrentlyReadingFragment : Fragment() {
             }
         })
 
-//        // Observe LiveData from the ViewModel
-//        viewModel.books.observe(viewLifecycleOwner) { books ->
-//            // Update the adapter with the new list of books
-//            bookAdapter.updateBooks(books)
-//        }
 
     }
 
@@ -139,127 +134,82 @@ class CurrentlyReadingFragment : Fragment() {
         bookAdapter.updateBooks(books)
     }
 
-    private fun showFilterDialog() {
-        val builder = AlertDialog.Builder(requireContext())
-        val inflater = requireActivity().layoutInflater
-        val view = inflater.inflate(R.layout.dialog_filter, null)
-
-        // Initialize views in the dialog
-//        val spinnerCategories: Spinner = view.findViewById(R.id.spinnerCategories)
+//    private fun showFilterDialog() {
+//        val builder = AlertDialog.Builder(requireContext())
+//        val inflater = requireActivity().layoutInflater
+//        val view = inflater.inflate(R.layout.dialog_filter, null)
+//
+//        // Initialize RecyclerView for categories
+//        val rvCategories: RecyclerView = view.findViewById(R.id.rvCategories)
+//        rvCategories.layoutManager = GridLayoutManager(context, 2)
+//
+//        // Use dynamic accountId from SharedPreferences
+//        if (accountId == -1L) {
+//            Log.e("CRFragment", "Invalid account ID")
+//            return
+//        }
+//
+//        // Retrieve categories only within the "Currently Reading" status
+//        val currentlyReadingBooks = myDbHelper.getBooksByAccountId(accountId, "Currently Reading")
+//        val categories = currentlyReadingBooks.map { it.category }.distinct()
+//
+//
+//        if (categories.isEmpty()) {
+//            Log.d("CRFragment", "No categories found for currently reading books")
+//            return
+//        }
+//
+//        val categoryAdapter = CategoryAdapter(categories, selectedCategories)
+//        rvCategories.adapter = categoryAdapter
+//
+//        // Set up dialog buttons
 //        val buttonSave: Button = view.findViewById(R.id.buttonSave)
 //        val buttonReset: Button = view.findViewById(R.id.buttonReset)
-//        val buttonCancel: Button = view.findViewById(R.id.buttonCancel)
-
-        // Initialize RecyclerView for categories
-        val rvCategories: RecyclerView = view.findViewById(R.id.rvCategories)
-        rvCategories.layoutManager = GridLayoutManager(context, 2)
-
-        // Use dynamic accountId from SharedPreferences
-        if (accountId == -1L) {
-            Log.e("CRFragment", "Invalid account ID")
-            return
-        }
-
-        // Retrieve categories only within the "Currently Reading" status
-        val currentlyReadingBooks = myDbHelper.getBooksByAccountId(accountId, "Currently Reading")
-        val categories = currentlyReadingBooks.map { it.category }.distinct()
-
-//        val categories = myDbHelper.getCategoriesByAccountId(accountId)
-
-        if (categories.isEmpty()) {
-            Log.d("CRFragment", "No categories found for currently reading books")
-            return
-        }
-
-//        val adapter =
-//            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-//        spinnerCategories.adapter = adapter
-        val categoryAdapter = CategoryAdapter(categories, selectedCategories)
-        rvCategories.adapter = categoryAdapter
-
-        // Set up dialog buttons
-        val buttonSave: Button = view.findViewById(R.id.buttonSave)
-        val buttonReset: Button = view.findViewById(R.id.buttonReset)
-
-        builder.setView(view)
-
-        if (categories.isEmpty()) {
-            Log.d("CRFragment", "No categories found for account ID: $accountId")
-            return
-        }
-
-        // Create and show the dialog
-        val dialog = builder.create()
-        dialog.show()
-
-        buttonSave.setOnClickListener {
-//            val selectedCategory = spinnerCategories.selectedItem as? String
-//            applyCategoryFilter(selectedCategory)
-//            dialog.dismiss()
-            applyCategoryFilter()
-            dialog.dismiss()
-        }
-
-        buttonReset.setOnClickListener {
-//            spinnerCategories.setSelection(0) // Reset to default
-//            resetFilters()
-//            dialog.dismiss()
-              selectedCategories.clear()
-              resetFilters()
-              dialog.dismiss()
-
-        }
-
-//        buttonCancel.setOnClickListener {
+//
+//        builder.setView(view)
+//
+//        if (categories.isEmpty()) {
+//            Log.d("CRFragment", "No categories found for account ID: $accountId")
+//            return
+//        }
+//
+//        // Create and show the dialog
+//        val dialog = builder.create()
+//        dialog.show()
+//
+//        buttonSave.setOnClickListener {
+//            applyCategoryFilter()
 //            dialog.dismiss()
 //        }
-
-    }
-
-//    private fun applyCategoryFilter(category: String?) {
-//        Log.d("CRFragment", "Applying category filter: $category")
 //
-//        // Get current books from the adapter
-////        val currentBooks = bookAdapter.getCurrentBooks()
+//        buttonReset.setOnClickListener {
+//              selectedCategories.clear()
+//              resetFilters()
+//              dialog.dismiss()
 //
-//        // Apply category filter
-//        val filteredBooks = if (category.isNullOrEmpty()) {
+//        }
+//    }
+//
+//    private fun applyCategoryFilter() {
+//        val filteredBooks = if (selectedCategories.isEmpty()) {
 //            originalBooks
 //        } else {
-//            originalBooks.filter { it.category == category }
+//            originalBooks.filter { it.category in selectedCategories }
 //        }
 //
-//        Log.d("CRFragment", "Filtered books count: ${filteredBooks.size}")
-//
-//        // Update the adapter with filtered books
 //        bookAdapter.updateBooks(filteredBooks)
 //    }
-
-    private fun applyCategoryFilter() {
-        val filteredBooks = if (selectedCategories.isEmpty()) {
-            originalBooks
-        } else {
-            originalBooks.filter { it.category in selectedCategories }
-        }
-
-        bookAdapter.updateBooks(filteredBooks)
-    }
-
-    private fun resetFilters() {
-        Log.d("CRFragment", "Resetting filters")
-
-        // Retrieve books again to restore the original state
-        if (accountId != -1L) {
-            val originalBooks = myDbHelper.getBooksByAccountId(accountId, "Currently Reading")
-            bookAdapter.updateBooks(originalBooks)
-        } else {
-            Log.e("CRFragment", "Account ID not found, cannot reset filters")
-        }
-    }
-
-
-
-
-
-
+//
+//    private fun resetFilters() {
+//        Log.d("CRFragment", "Resetting filters")
+//
+//        // Retrieve books again to restore the original state
+//        if (accountId != -1L) {
+//            val originalBooks = myDbHelper.getBooksByAccountId(accountId, "Currently Reading")
+//            bookAdapter.updateBooks(originalBooks)
+//        } else {
+//            Log.e("CRFragment", "Account ID not found, cannot reset filters")
+//        }
+//    }
+//
 }

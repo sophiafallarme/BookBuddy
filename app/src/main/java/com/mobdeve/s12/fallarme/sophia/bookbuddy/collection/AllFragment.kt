@@ -83,19 +83,10 @@ class AllFragment : Fragment() {
         //used to update fragment based on newly saved books
         viewModel = ViewModelProvider(requireActivity()).get(BookViewModel::class.java)
 
-        // Initialize Database Helper
-        myDbHelper = MyDbHelper(requireContext())  // Assuming you have a constructor that accepts context
-
-        // Observe books LiveData
-//        viewModel.books.observe(viewLifecycleOwner) { books ->
-//            Log.d("AllFragment", "Observed books: ${books.size}")
-//            bookAdapter.updateBooks(books)
+//        // Set up FAB to open the filter dialog ***
+//        view.findViewById<FloatingActionButton>(R.id.fabFilter).setOnClickListener {
+//            showFilterDialog()
 //        }
-
-        // Set up FAB to open the filter dialog
-        view.findViewById<FloatingActionButton>(R.id.fabFilter).setOnClickListener {
-            showFilterDialog()
-        }
 
         return view
 
@@ -112,7 +103,6 @@ class AllFragment : Fragment() {
         // Retrieve books and update adapter
         if (accountId != -1L) {
             originalBooks = myDbHelper.getBooksByAccountId(accountId)
-//            val books = myDbHelper.getBooksByAccountId(accountId)
             bookAdapter.updateBooks(originalBooks)
         } else {
             // Handle the case where accountId is not found
@@ -139,17 +129,17 @@ class AllFragment : Fragment() {
         bookAdapter.updateBooks(books)
     }
 
+    // New method to update books based on the filter
+    fun updateBooks(filteredBooks: List<Book>) {
+        Log.d("AllFragment", "Updating books with filtered list: ${filteredBooks.size}")
+        bookAdapter.updateBooks(filteredBooks)
+    }
+
     private fun showFilterDialog() {
 
         val builder = AlertDialog.Builder(requireContext())
         val inflater = requireActivity().layoutInflater
         val view = inflater.inflate(R.layout.dialog_filter, null)
-
-        // Initialize views in the dialog
-//        val spinnerCategories: Spinner = view.findViewById(R.id.spinnerCategories)
-//        val buttonSave: Button = view.findViewById(R.id.buttonSave)
-//        val buttonReset: Button = view.findViewById(R.id.buttonReset)
-//        val buttonCancel: Button = view.findViewById(R.id.buttonCancel)
 
         // Initialize RecyclerView for categories
         val rvCategories: RecyclerView = view.findViewById(R.id.rvCategories)
@@ -163,8 +153,6 @@ class AllFragment : Fragment() {
         }
 
         val categories = myDbHelper.getCategoriesByAccountId(accountId)
-//        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-//        spinnerCategories.adapter = adapter
         val categoryAdapter = CategoryAdapter(categories, selectedCategories)
         rvCategories.adapter = categoryAdapter
 
@@ -180,31 +168,16 @@ class AllFragment : Fragment() {
             return
         }
 
-//        val builder = AlertDialog.Builder(requireContext())
-//        builder.setTitle("Select Category")
-//        builder.setItems(categories.toTypedArray()) { _, which ->
-//            selectedCategory = categories[which]
-//            Log.d("AllFragment", "Selected category: $selectedCategory")
-//            applyCategoryFilter(selectedCategory)
-//        }
-//        builder.create().show()
-
         // Create and show the dialog
         val dialog = builder.create()
         dialog.show()
 
         buttonSave.setOnClickListener {
-//            val selectedCategory = spinnerCategories.selectedItem as? String
-//            applyCategoryFilter(selectedCategory)
-//            dialog.dismiss()
             applyCategoryFilter()
             dialog.dismiss()
         }
 
         buttonReset.setOnClickListener {
-//            spinnerCategories.setSelection(0) // Reset to default
-//            resetFilters()
-//            dialog.dismiss()
             selectedCategories.clear()
             resetFilters()
             dialog.dismiss()
@@ -214,25 +187,6 @@ class AllFragment : Fragment() {
 //            dialog.dismiss()
 //        }
     }
-
-//    private fun applyCategoryFilter(category: String?) {
-//        Log.d("AllFragment", "Applying category filter: $category")
-//
-//        // Get current books from the adapter
-////        val currentBooks = bookAdapter.getCurrentBooks()
-//
-//        // Apply category filter
-//        val filteredBooks = if (category.isNullOrEmpty()) {
-//            originalBooks
-//        } else {
-//            originalBooks.filter { it.category == category }
-//        }
-//
-//        Log.d("AllFragment", "Filtered books count: ${filteredBooks.size}")
-//
-//        // Update the adapter with filtered books
-//        bookAdapter.updateBooks(filteredBooks)
-//    }
 
     private fun applyCategoryFilter() {
         Log.d("AllFragment", "Applying category filter: $selectedCategories")
@@ -247,23 +201,11 @@ class AllFragment : Fragment() {
         bookAdapter.updateBooks(filteredBooks)
     }
 
-//    private fun resetFilters() {
-//        Log.d("AllFragment", "Resetting filters")
-//
-//        // Retrieve books again to restore the original state
-//        if (accountId != -1L) {
-//            val originalBooks = myDbHelper.getBooksByAccountId(accountId)
-//            bookAdapter.updateBooks(originalBooks)
-//        } else {
-//            Log.e("AllFragment", "Account ID not found, cannot reset filters")
-//        }
-//    }
     private fun resetFilters() {
         Log.d("AllFragment", "Resetting filters")
         selectedCategories.clear()
         bookAdapter.updateBooks(originalBooks)
     }
-
 
 
 }
