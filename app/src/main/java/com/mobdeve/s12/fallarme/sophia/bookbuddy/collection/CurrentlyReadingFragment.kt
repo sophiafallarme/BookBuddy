@@ -34,6 +34,8 @@ class CurrentlyReadingFragment : Fragment() {
     private lateinit var viewModel: BookViewModel
     private var accountId: Long = -1L
     private var originalBooks: List<Book> = emptyList()
+    private val selectedCategories = mutableSetOf<String>()  // Store selected categories
+
 
     private val bookUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -143,10 +145,14 @@ class CurrentlyReadingFragment : Fragment() {
         val view = inflater.inflate(R.layout.dialog_filter, null)
 
         // Initialize views in the dialog
-        val spinnerCategories: Spinner = view.findViewById(R.id.spinnerCategories)
-        val buttonSave: Button = view.findViewById(R.id.buttonSave)
-        val buttonReset: Button = view.findViewById(R.id.buttonReset)
-        val buttonCancel: Button = view.findViewById(R.id.buttonCancel)
+//        val spinnerCategories: Spinner = view.findViewById(R.id.spinnerCategories)
+//        val buttonSave: Button = view.findViewById(R.id.buttonSave)
+//        val buttonReset: Button = view.findViewById(R.id.buttonReset)
+//        val buttonCancel: Button = view.findViewById(R.id.buttonCancel)
+
+        // Initialize RecyclerView for categories
+        val rvCategories: RecyclerView = view.findViewById(R.id.rvCategories)
+        rvCategories.layoutManager = GridLayoutManager(context, 2)
 
         // Use dynamic accountId from SharedPreferences
         if (accountId == -1L) {
@@ -165,9 +171,15 @@ class CurrentlyReadingFragment : Fragment() {
             return
         }
 
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-        spinnerCategories.adapter = adapter
+//        val adapter =
+//            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+//        spinnerCategories.adapter = adapter
+        val categoryAdapter = CategoryAdapter(categories, selectedCategories)
+        rvCategories.adapter = categoryAdapter
+
+        // Set up dialog buttons
+        val buttonSave: Button = view.findViewById(R.id.buttonSave)
+        val buttonReset: Button = view.findViewById(R.id.buttonReset)
 
         builder.setView(view)
 
@@ -181,39 +193,55 @@ class CurrentlyReadingFragment : Fragment() {
         dialog.show()
 
         buttonSave.setOnClickListener {
-            val selectedCategory = spinnerCategories.selectedItem as? String
-            applyCategoryFilter(selectedCategory)
+//            val selectedCategory = spinnerCategories.selectedItem as? String
+//            applyCategoryFilter(selectedCategory)
+//            dialog.dismiss()
+            applyCategoryFilter()
             dialog.dismiss()
         }
 
         buttonReset.setOnClickListener {
-            spinnerCategories.setSelection(0) // Reset to default
-            resetFilters()
-            dialog.dismiss()
+//            spinnerCategories.setSelection(0) // Reset to default
+//            resetFilters()
+//            dialog.dismiss()
+              selectedCategories.clear()
+              resetFilters()
+              dialog.dismiss()
+
         }
 
-        buttonCancel.setOnClickListener {
-            dialog.dismiss()
-        }
+//        buttonCancel.setOnClickListener {
+//            dialog.dismiss()
+//        }
 
     }
 
-    private fun applyCategoryFilter(category: String?) {
-        Log.d("CRFragment", "Applying category filter: $category")
+//    private fun applyCategoryFilter(category: String?) {
+//        Log.d("CRFragment", "Applying category filter: $category")
+//
+//        // Get current books from the adapter
+////        val currentBooks = bookAdapter.getCurrentBooks()
+//
+//        // Apply category filter
+//        val filteredBooks = if (category.isNullOrEmpty()) {
+//            originalBooks
+//        } else {
+//            originalBooks.filter { it.category == category }
+//        }
+//
+//        Log.d("CRFragment", "Filtered books count: ${filteredBooks.size}")
+//
+//        // Update the adapter with filtered books
+//        bookAdapter.updateBooks(filteredBooks)
+//    }
 
-        // Get current books from the adapter
-//        val currentBooks = bookAdapter.getCurrentBooks()
-
-        // Apply category filter
-        val filteredBooks = if (category.isNullOrEmpty()) {
+    private fun applyCategoryFilter() {
+        val filteredBooks = if (selectedCategories.isEmpty()) {
             originalBooks
         } else {
-            originalBooks.filter { it.category == category }
+            originalBooks.filter { it.category in selectedCategories }
         }
 
-        Log.d("CRFragment", "Filtered books count: ${filteredBooks.size}")
-
-        // Update the adapter with filtered books
         bookAdapter.updateBooks(filteredBooks)
     }
 
