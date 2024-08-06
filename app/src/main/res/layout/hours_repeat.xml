@@ -6,21 +6,9 @@
     android:padding="16dp"
     android:gravity="center">
 
-        <NumberPicker
-            android:id="@+id/numberPickerHour"
-            android:layout_width="wrap_content"
+        <TimePicker
+            android:id="@+id/timePicker"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp" />
-
-        <NumberPicker
-            android:id="@+id/numberPickerMinute"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp" />
-
-        <NumberPicker
-            android:id="@+id/numberPickerAmPm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp" />
+            android:timePickerMode="spinner"/>
 </LinearLayout>
