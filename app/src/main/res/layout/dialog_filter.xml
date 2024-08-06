@@ -87,23 +87,27 @@
                 android:id="@+id/buttonSave"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:backgroundTint="#787272"
-                android:textAllCaps="false"
+                android:backgroundTint="@color/secondary_color"
+                android:fontFamily="@font/nourd_regular"
                 android:text="Save Changes"
+                android:textAllCaps="false"
+                android:textColor="#000000"
                 android:textSize="13sp"
-                app:rippleColor="#673AB7"
-                android:fontFamily="@font/nourd_regular"/>
+                android:textStyle="bold"
+                app:rippleColor="#673AB7" />
 
             <Button
                 android:id="@+id/buttonReset"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
-                android:backgroundTint="#787272"
-                android:textAllCaps="false"
+                android:backgroundTint="@color/secondary_color"
+                android:fontFamily="@font/nourd_regular"
                 android:text="Reset"
+                android:textAllCaps="false"
+                android:textColor="#000000"
                 android:textSize="13sp"
-                android:fontFamily="@font/nourd_regular" />
+                android:textStyle="bold" />
 
         </LinearLayout>
 

@@ -3,7 +3,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -65,10 +70,10 @@ class BookSearchActivity : AppCompatActivity() {
         })
     }
 
-    private fun fetchAccountFromDatabase(accountId: Long): Account {
-        val dbHelper = MyDbHelper.getInstance(this)
-        return dbHelper?.getAccountById(accountId) ?: throw IllegalArgumentException("Account not found")
-    }
+   // private fun fetchAccountFromDatabase(accountId: Long): Account {
+   //     val dbHelper = MyDbHelper.getInstance(this)
+   //     return dbHelper?.getAccountById(accountId) ?: throw IllegalArgumentException("Account not found")
+   // }
 
     private fun showSaveBookDialog(book: Book) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.popup_save_book, null)
@@ -137,64 +142,6 @@ class BookSearchActivity : AppCompatActivity() {
 
         dialog.show()
     }
-
-
-    /* OLD NO NEW LAYOUT AND CATEGORY IS NOT SHOWN IN THE START
-    private fun showSaveBookDialog(book: Book) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.popup_save_book, null)
-        val statusSpinner: Spinner = dialogView.findViewById(R.id.spinner_status)
-        val categorySpinner: Spinner = dialogView.findViewById(R.id.spinner_category)
-        val newCategoryEditText: EditText = dialogView.findViewById(R.id.edittext_new_category)
-
-        val categories = loggedInAccount.category.toMutableList().apply { add("Add New Category") }
-        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        categorySpinner.adapter = categoryAdapter
-
-        categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                if (categories[position] == "Add New Category") {
-                    newCategoryEditText.visibility = View.VISIBLE
-                } else {
-                    newCategoryEditText.visibility = View.GONE
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setView(dialogView)
-            .setPositiveButton("Save") { dialog, _ ->
-                val selectedStatus = statusSpinner.selectedItem.toString()
-                val selectedCategory = if (newCategoryEditText.visibility == View.VISIBLE) {
-                    newCategoryEditText.text.toString().also {
-                        categories.add(categories.size - 1, it)
-                        categoryAdapter.notifyDataSetChanged()
-                        addCategoryToAccount(loggedInAccount, it) // Add new category to account
-                    }
-                } else {
-                    categorySpinner.selectedItem.toString()
-                }
-
-                val bookToSave = book.copy(
-                    status = selectedStatus,
-                    category = selectedCategory
-                )
-
-                saveBookToAccount(loggedInAccount, bookToSave)
-
-                dialog.dismiss()
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-
-        dialog.show()
-    }
-
-     */
 
     private fun saveBookToAccount(account: Account, book: Book) {
         val dbHelper = MyDbHelper.getInstance(this)

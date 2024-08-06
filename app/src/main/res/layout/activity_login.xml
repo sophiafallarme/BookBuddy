@@ -38,6 +38,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="15dp"
+        android:fontFamily="@font/nourd_semi_bold"
         android:ems="10"
         android:hint="Username"
         android:inputType="text"
@@ -53,6 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
+        android:fontFamily="@font/nourd_semi_bold"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
@@ -68,6 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:backgroundTint="@color/secondary_color"
+        android:fontFamily="@font/nourd_semi_bold"
         android:text="Log In"
         android:textAllCaps="false"
         android:textColor="#000000"
@@ -89,7 +92,7 @@
             android:id="@+id/noAccTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
+            android:fontFamily="@font/nourd_semi_bold"
             android:text="No Account Yet?"
             android:textColor="#121111" />
 
@@ -98,6 +101,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:fontFamily="@font/nourd_semi_bold"
             android:text="Register"
             android:textColor="@color/primary_color"
             android:textStyle="bold"/>
