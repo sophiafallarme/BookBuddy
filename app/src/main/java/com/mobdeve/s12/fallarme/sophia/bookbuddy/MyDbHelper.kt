@@ -743,6 +743,38 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
         if (cursor.moveToFirst()) {
             do {
                 val category = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_CATEGORY))
+                if (!category.isNullOrEmpty() && !categories.contains(category)) {
+                    categories.add(category)
+                }
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        database.close()
+
+        return categories
+    }
+
+
+    /*
+    fun getCategoriesByAccountId(accountId: Long): List<String> {
+        val categories = mutableListOf<String>()
+        val database = this.readableDatabase
+        val cursor = database.query(
+            true,  // distinct
+            DbReferences.BOOK_TABLE_NAME,
+            arrayOf(DbReferences.COLUMN_NAME_BOOK_CATEGORY),
+            "${DbReferences.COLUMN_NAME_ACCOUNT_ID} = ?",
+            arrayOf(accountId.toString()),
+            null,
+            null,
+            null,
+            null
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(DbReferences.COLUMN_NAME_BOOK_CATEGORY))
                 if (!category.isNullOrEmpty()) {
                     categories.add(category)
                 }
@@ -754,6 +786,8 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
 
         return categories
     }
+
+     */
 
 
     fun getUserByUsername(username: String): Account? {
@@ -831,13 +865,46 @@ fun updateBook(book: Book): Int {
             put("review", book.review) // Assuming you have a column for review
         }
 
+    // Perform the update operation
+    val rowsAffected = db.update(
+        DbReferences.BOOK_TABLE_NAME,
+        contentValues,
+        "${DbReferences._ID} = ?",
+        arrayOf(book.id.toString()) // Ensure book.id is converted to a string
+    )
+
+    // Consider not closing the database here if it's managed by the helper class
+    return rowsAffected
+
+    /*
         return db.update(
             DbReferences.BOOK_TABLE_NAME,
             contentValues,
             "${DbReferences._ID} = ?",
             arrayOf(book.id)
         )
+
+     */
     }
+
+    fun updateAccountCategories(accountId: Long, categories: List<String>) {
+        val db = writableDatabase
+
+        // Convert the updated category list back to a string
+        val updatedCategories = categories.joinToString(",")
+
+        val contentValues = ContentValues().apply {
+            put(DbReferences.COLUMN_NAME_CATEGORY, updatedCategories)
+        }
+
+        db.update(
+            DbReferences.TABLE_NAME,  // Update the account table
+            contentValues,
+            "${DbReferences._ID} = ?",
+            arrayOf(accountId.toString())
+        )
+    }
+
 
 
 
