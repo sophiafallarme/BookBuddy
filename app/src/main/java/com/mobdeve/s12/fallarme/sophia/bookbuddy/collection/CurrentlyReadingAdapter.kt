@@ -29,7 +29,7 @@ class CurrentlyReadingAdapter(private var books: List<Book>) :
         val tvwCategory: TextView = itemView.findViewById(R.id.tvwCategory)
         val tvwBookTitle: TextView = itemView.findViewById(R.id.tvwBookTitle)
         val tvwAuthor: TextView = itemView.findViewById(R.id.tvwAuthor)
-        val btnMoreDetails: Button = itemView.findViewById(R.id.btnMoreDetails)
+//        val btnMoreDetails: Button = itemView.findViewById(R.id.btnMoreDetails)
 
         fun bind(book: Book) {
             tvwBookTitle.text = book.title
@@ -42,7 +42,7 @@ class CurrentlyReadingAdapter(private var books: List<Book>) :
 
         private fun adjustTextSize(title: String) {
             val maxLength = 50 // define the length threshold
-            val minTextSize = 14f
+            val minTextSize = 13f
             val maxTextSize = 15f
 
             tvwBookTitle.textSize = when {
@@ -62,7 +62,12 @@ class CurrentlyReadingAdapter(private var books: List<Book>) :
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
         var book = books[position]
         holder.bind(book)
-        holder.btnMoreDetails.setOnClickListener {
+//        holder.btnMoreDetails.setOnClickListener {
+//            onItemClickListener?.onItemClick(book)
+//        }
+
+        // Set click listener on the entire item view
+        holder.itemView.setOnClickListener {
             onItemClickListener?.onItemClick(book)
         }
     }
