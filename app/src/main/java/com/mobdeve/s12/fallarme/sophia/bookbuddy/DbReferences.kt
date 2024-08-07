@@ -22,6 +22,12 @@ object DbReferences {
     const val COLUMN_NAME_ACCOUNT_ID = "accountId"  // Foreign key to link to accounts table
     const val COLUMN_NAME_REVIEW = "review" // review
 
+    const val NOTIFICATION_TABLE_NAME = "notifications"
+    const val COLUMN_NAME_NOTIFICATION_ID = "_id"
+    const val COLUMN_NAME_NOTIFICATION_TITLE = "title"
+    const val COLUMN_NAME_NOTIFICATION_MESSAGE = "message"
+    const val COLUMN_NAME_NOTIFICATION_TIME = "time"
+
     const val _ID = "_id"
 
     const val CREATE_TABLE_STATEMENT = """
@@ -48,6 +54,17 @@ object DbReferences {
             $COLUMN_NAME_RATING TEXT,
             $COLUMN_NAME_REVIEW TEXT, 
             $COLUMN_NAME_ACCOUNT_ID INTEGER,
+            FOREIGN KEY($COLUMN_NAME_ACCOUNT_ID) REFERENCES $TABLE_NAME($_ID)
+        )
+    """
+
+    const val CREATE_NOTIFICATION_TABLE_STATEMENT = """
+        CREATE TABLE $NOTIFICATION_TABLE_NAME (
+            $COLUMN_NAME_NOTIFICATION_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            $COLUMN_NAME_ACCOUNT_ID INTEGER,
+            $COLUMN_NAME_NOTIFICATION_TITLE TEXT,
+            $COLUMN_NAME_NOTIFICATION_MESSAGE TEXT,
+            $COLUMN_NAME_NOTIFICATION_TIME TEXT,
             FOREIGN KEY($COLUMN_NAME_ACCOUNT_ID) REFERENCES $TABLE_NAME($_ID)
         )
     """
