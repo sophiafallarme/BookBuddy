@@ -107,6 +107,16 @@ class BookSearchActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
+        val dbHelper = MyDbHelper.getInstance(this)
+        val savedBooks = dbHelper?.getBooksByAccountId(loggedInAccount.id) ?: emptyList()
+
+        val isBookSaved = savedBooks.any { it.title == book.title }
+        if (isBookSaved) {
+            saveButton.isEnabled = false
+            saveButton.text = "Already Saved"
+          //  saveButton.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.darkergray))
+        }
+
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setPositiveButton(null, null) // No action for default button
