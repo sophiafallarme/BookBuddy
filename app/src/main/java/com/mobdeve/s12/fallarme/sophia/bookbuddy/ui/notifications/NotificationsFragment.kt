@@ -1,10 +1,6 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy.ui.notifications
 
 import android.Manifest
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -12,13 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mobdeve.s12.fallarme.sophia.bookbuddy.NotificationReceiver
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.R
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.TimeAdapter
 import com.mobdeve.s12.fallarme.sophia.bookbuddy.databinding.FragmentNotificationsBinding
@@ -28,18 +24,19 @@ import java.util.*
 
 class NotificationsFragment : Fragment() {
 
-    companion object {
-        private const val REQUEST_NOTIFICATION_PERMISSION = 1
-        private const val PREFS_NAME = "NotificationsPrefs"
-        private const val PREF_SELECTED_DAYS = "selected_days"
-        private const val PREF_SELECTED_TIMES = "selected_times"
-    }
-
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
     private lateinit var notificationsViewModel: NotificationsViewModel
     private val selectedTimes = mutableListOf<String>()
     private lateinit var timeAdapter: TimeAdapter
+
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            Toast.makeText(requireContext(), "Notification permission granted.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(requireContext(), "Notification permission denied.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,19 +48,8 @@ class NotificationsFragment : Fragment() {
 
         notificationsViewModel = ViewModelProvider(this)[NotificationsViewModel::class.java]
 
-        timeAdapter = TimeAdapter(selectedTimes) { time ->
-            removeTime(time)
-        }
-        binding.recyclerViewTimes.adapter = timeAdapter
-        binding.recyclerViewTimes.layoutManager = LinearLayoutManager(requireContext())
-
-        notificationsViewModel.repeatedDays.observe(viewLifecycleOwner) { days ->
-            binding.daysPopup.text = days
-        }
-
-        notificationsViewModel.repeatedHours.observe(viewLifecycleOwner) { text ->
-            binding.hoursPopup.text = text
-        }
+        setupRecyclerView()
+        setupObservers()
 
         binding.daysPopup.setOnClickListener {
             showSchedulePopup()
@@ -76,9 +62,46 @@ class NotificationsFragment : Fragment() {
         }
 
         checkNotificationPermission()
-        loadPreferences()
+        notificationsViewModel.loadPreferences()
 
         return view
+    }
+
+    private fun setupRecyclerView() {
+        timeAdapter = TimeAdapter(selectedTimes) { time ->
+            removeTime(time)
+        }
+        binding.recyclerViewTimes.apply {
+            adapter = timeAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            isNestedScrollingEnabled = true
+        }
+    }
+
+    private fun setupObservers() {
+        notificationsViewModel.repeatedDays.observe(viewLifecycleOwner) { days ->
+            binding.daysPopup.text = days ?: "No days selected"
+        }
+
+        notificationsViewModel.repeatedHours.observe(viewLifecycleOwner) { times ->
+            val oldTimes = ArrayList(selectedTimes)
+            selectedTimes.clear()
+            if (!times.isNullOrEmpty()) {
+                selectedTimes.addAll(times.split(", ").map { it.trim() }.filter { it.isNotEmpty() })
+                sortSelectedTimes()
+            }
+
+            updateRecyclerView(oldTimes, selectedTimes)
+            updateHoursPopupVisibility()
+        }
+    }
+
+    private fun updateRecyclerView(oldTimes: List<String>, newTimes: List<String>) {
+        val diffCallback = TimeDiffCallback(oldTimes, newTimes)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        // Apply the diff result to the adapter
+        diffResult.dispatchUpdatesTo(timeAdapter)
     }
 
     private fun showSchedulePopup() {
@@ -86,24 +109,24 @@ class NotificationsFragment : Fragment() {
         val dialogBinding = ScheduleRepeatBinding.inflate(layoutInflater)
         builder.setView(dialogBinding.root)
 
-        val selectedDays = loadSelectedDays()
-        dialogBinding.checkBoxMonday.isChecked = selectedDays.contains("Monday")
-        dialogBinding.checkBoxTuesday.isChecked = selectedDays.contains("Tuesday")
-        dialogBinding.checkBoxWednesday.isChecked = selectedDays.contains("Wednesday")
-        dialogBinding.checkBoxThursday.isChecked = selectedDays.contains("Thursday")
-        dialogBinding.checkBoxFriday.isChecked = selectedDays.contains("Friday")
-        dialogBinding.checkBoxSaturday.isChecked = selectedDays.contains("Saturday")
-        dialogBinding.checkBoxSunday.isChecked = selectedDays.contains("Sunday")
+        val days = notificationsViewModel.repeatedDays.value?.split(", ") ?: emptyList()
+        dialogBinding.checkBoxMonday.isChecked = days.contains("Monday")
+        dialogBinding.checkBoxTuesday.isChecked = days.contains("Tuesday")
+        dialogBinding.checkBoxWednesday.isChecked = days.contains("Wednesday")
+        dialogBinding.checkBoxThursday.isChecked = days.contains("Thursday")
+        dialogBinding.checkBoxFriday.isChecked = days.contains("Friday")
+        dialogBinding.checkBoxSaturday.isChecked = days.contains("Saturday")
+        dialogBinding.checkBoxSunday.isChecked = days.contains("Sunday")
 
         builder.setPositiveButton("OK") { _, _ ->
-            val localSelectedDays = mutableListOf<String>()
-            if (dialogBinding.checkBoxMonday.isChecked) localSelectedDays.add("Monday")
-            if (dialogBinding.checkBoxTuesday.isChecked) localSelectedDays.add("Tuesday")
-            if (dialogBinding.checkBoxWednesday.isChecked) localSelectedDays.add("Wednesday")
-            if (dialogBinding.checkBoxThursday.isChecked) localSelectedDays.add("Thursday")
-            if (dialogBinding.checkBoxFriday.isChecked) localSelectedDays.add("Friday")
-            if (dialogBinding.checkBoxSaturday.isChecked) localSelectedDays.add("Saturday")
-            if (dialogBinding.checkBoxSunday.isChecked) localSelectedDays.add("Sunday")
+            val selectedDays = mutableListOf<String>()
+            if (dialogBinding.checkBoxMonday.isChecked) selectedDays.add("Monday")
+            if (dialogBinding.checkBoxTuesday.isChecked) selectedDays.add("Tuesday")
+            if (dialogBinding.checkBoxWednesday.isChecked) selectedDays.add("Wednesday")
+            if (dialogBinding.checkBoxThursday.isChecked) selectedDays.add("Thursday")
+            if (dialogBinding.checkBoxFriday.isChecked) selectedDays.add("Friday")
+            if (dialogBinding.checkBoxSaturday.isChecked) selectedDays.add("Saturday")
+            if (dialogBinding.checkBoxSunday.isChecked) selectedDays.add("Sunday")
 
             val daysText = when {
                 selectedDays.size == 7 -> "Everyday"
@@ -111,8 +134,6 @@ class NotificationsFragment : Fragment() {
                 else -> selectedDays.joinToString(", ")
             }
             notificationsViewModel.setSelectedDays(daysText)
-
-            saveSelectedDays(localSelectedDays)
             Toast.makeText(requireContext(), getString(R.string.selected_days, daysText), Toast.LENGTH_SHORT).show()
         }
 
@@ -120,238 +141,147 @@ class NotificationsFragment : Fragment() {
         builder.create().show()
     }
 
+
     private fun showTimePickerPopup(onTimeSelected: (String) -> Unit) {
         val builder = AlertDialog.Builder(requireContext())
         val dialogBinding = HoursRepeatBinding.inflate(layoutInflater)
         builder.setView(dialogBinding.root)
 
-        initializeNumberPickers(dialogBinding)
+        // Set TimePicker to 12-hour format
+        dialogBinding.timePicker.setIs24HourView(false)
 
         builder.setPositiveButton("OK") { _, _ ->
-            val hour = dialogBinding.numberPickerHour.value
-            val minute = dialogBinding.numberPickerMinute.value
-            val amPm = if (dialogBinding.numberPickerAmPm.value == 0) "AM" else "PM"
+            val hour = dialogBinding.timePicker.hour
+            val minute = dialogBinding.timePicker.minute
+            val amPm = if (dialogBinding.timePicker.hour < 12) "AM" else "PM"
 
-            val timeText = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} $amPm"
-
-            notificationsViewModel.setAdditionalText(timeText)
-            onTimeSelected(timeText)
+            // Convert 24-hour time to 12-hour time with AM/PM
+            val timeText = formatTime(hour, minute, amPm)
+            if (!selectedTimes.contains(timeText)) {
+                onTimeSelected(timeText)
+            } else {
+                Toast.makeText(requireContext(), "Time already selected", Toast.LENGTH_SHORT).show()
+            }
         }
 
         builder.setNegativeButton("Cancel", null)
         builder.create().show()
     }
 
-    private fun initializeNumberPickers(binding: HoursRepeatBinding) {
-        binding.numberPickerHour.apply {
-            minValue = 1
-            maxValue = 12
-            wrapSelectorWheel = true
-        }
-
-        binding.numberPickerMinute.apply {
-            minValue = 0
-            maxValue = 59
-            wrapSelectorWheel = true
-            displayedValues = getFormattedMinutes()
-        }
-
-        binding.numberPickerAmPm.apply {
-            minValue = 0
-            maxValue = 1
-            wrapSelectorWheel = true
-            displayedValues = resources.getStringArray(R.array.am_pm_values)
-        }
+    private fun formatTime(hour: Int, minute: Int, amPm: String): String {
+        val formattedHour = if (hour == 0) 12 else if (hour > 12) hour - 12 else hour
+        return String.format(Locale.getDefault(), "%02d:%02d %s", formattedHour, minute, amPm)
     }
 
     private fun addTime(timeText: String) {
-        if (selectedTimes.contains(timeText)) return // Prevent duplicate times
-
-        selectedTimes.add(timeText)
-        timeAdapter.notifyItemInserted(selectedTimes.size - 1) // Use specific notify method
-        saveSelectedTimes()
-        scheduleNotification(timeText)
-        binding.hoursPopup.visibility = View.GONE
+        if (!selectedTimes.contains(timeText)) {
+            selectedTimes.add(timeText)
+            sortSelectedTimes()
+            // Update the RecyclerView with changes
+            timeAdapter.notifyItemInserted(selectedTimes.indexOf(timeText))
+            notificationsViewModel.addSelectedTime(timeText)
+            updateHoursPopupVisibility()
+        }
     }
 
     private fun removeTime(timeText: String) {
         val index = selectedTimes.indexOf(timeText)
         if (index != -1) {
             selectedTimes.removeAt(index)
-            timeAdapter.notifyItemRemoved(index) // Use specific notify method
-            saveSelectedTimes()
-        }
-
-        if (selectedTimes.isEmpty()) {
-            binding.hoursPopup.visibility = View.VISIBLE
+            timeAdapter.notifyItemRemoved(index)
+            notificationsViewModel.removeSelectedTime(timeText)
+            updateHoursPopupVisibility()
         }
     }
 
-    private fun getFormattedMinutes(): Array<String> {
-        return Array(60) { minute ->
-            minute.toString().padStart(2, '0')
+    private fun sortSelectedTimes() {
+        val oldTimes = ArrayList(selectedTimes)  // Create a copy of the current list
+        val sortedTimes = selectedTimes.sortedWith { time1, time2 ->
+            val (hour1, minute1) = parseTime(time1)
+            val (hour2, minute2) = parseTime(time2)
+
+            // Compare hours first, then minutes
+            val hourComparison = compareValues(hour1, hour2)
+            if (hourComparison != 0) {
+                hourComparison
+            } else {
+                compareValues(minute1, minute2)
+            }
+        }
+
+        // Update the list with sorted times
+        selectedTimes.clear()
+        selectedTimes.addAll(sortedTimes)
+
+        // Calculate the diff between the old and new lists
+        val diffCallback = TimeDiffCallback(oldTimes, selectedTimes)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        // Notify the adapter with the diff result
+        diffResult.dispatchUpdatesTo(timeAdapter)
+    }
+
+    private fun parseTime(time: String): Pair<Int, Int> {
+        val parts = time.split(" ")
+        if (parts.size != 2) throw IllegalArgumentException("Invalid time format")
+
+        val timePart = parts[0]
+        val amPm = parts[1]
+        val timeParts = timePart.split(":")
+
+        if (timeParts.size != 2) throw IllegalArgumentException("Invalid time format")
+
+        val hour = timeParts[0].toInt()
+        val minute = timeParts[1].toInt()
+
+        return when (amPm) {
+            "AM" -> if (hour == 12) Pair(0, minute) else Pair(hour, minute)
+            "PM" -> if (hour == 12) Pair(12, minute) else Pair(hour + 12, minute)
+            else -> throw IllegalArgumentException("Invalid AM/PM format")
+        }
+    }
+
+    private fun updateHoursPopupVisibility() {
+        binding.hoursPopup.visibility = if (selectedTimes.isEmpty()) {
+            View.VISIBLE
+        } else {
+            View.GONE
         }
     }
 
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    REQUEST_NOTIFICATION_PERMISSION
-                )
-            }
-        }
-    }
-
-    @Deprecated("Deprecated in Android 13", ReplaceWith("requestPermissions"))
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireContext(), "Notification permission granted.", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(requireContext(), "Notification permission denied.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun scheduleNotification(timeText: String) {
-        val (hour, minute, amPm) = parseTime(timeText)
-        val selectedDays = notificationsViewModel.repeatedDays.value?.split(", ") ?: emptyList()
-
-        selectedDays.forEach { day ->
-            val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val calendar = Calendar.getInstance().apply {
-                set(Calendar.HOUR, hour)
-                set(Calendar.MINUTE, minute)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-                set(Calendar.AM_PM, if (amPm == "AM") Calendar.AM else Calendar.PM)
-                set(Calendar.DAY_OF_WEEK, getDayOfWeek(day))
-            }
-
-            if (calendar.timeInMillis < System.currentTimeMillis()) {
-                calendar.add(Calendar.WEEK_OF_YEAR, 1)
-            }
-
-            val intent = Intent(requireContext(), NotificationReceiver::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(requireContext(), calendar.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-            alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                AlarmManager.INTERVAL_DAY * 7,
-                pendingIntent
-            )
-        }
-    }
-
-    private fun parseTime(timeText: String): Triple<Int, Int, String> {
-        val parts = timeText.split(" ", ":")
-        val hour = parts[0].toInt()
-        val minute = parts[1].toInt()
-        val amPm = parts[2]
-        return Triple(hour, minute, amPm)
-    }
-
-    private fun getDayOfWeek(day: String): Int {
-        return when (day) {
-            "Sunday" -> Calendar.SUNDAY
-            "Monday" -> Calendar.MONDAY
-            "Tuesday" -> Calendar.TUESDAY
-            "Wednesday" -> Calendar.WEDNESDAY
-            "Thursday" -> Calendar.THURSDAY
-            "Friday" -> Calendar.FRIDAY
-            "Saturday" -> Calendar.SATURDAY
-            else -> Calendar.MONDAY
-        }
-    }
-
-    private fun saveSelectedDays(days: List<String>) {
-        val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            putStringSet(PREF_SELECTED_DAYS, days.toSet())
-            apply()
-        }
-    }
-
-    private fun loadSelectedDays(): Set<String> {
-        val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return sharedPreferences.getStringSet(PREF_SELECTED_DAYS, emptySet()) ?: emptySet()
-    }
-
-    private fun saveSelectedTimes() {
-        val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            putStringSet(PREF_SELECTED_TIMES, selectedTimes.toSet())
-            apply()
-        }
-    }
-
-    private fun loadPreferences() {
-        val sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val savedDays = sharedPreferences.getStringSet(PREF_SELECTED_DAYS, emptySet())
-        val savedTimes = sharedPreferences.getStringSet(PREF_SELECTED_TIMES, emptySet())
-
-        savedDays?.let { days ->
-            val daysText = when {
-                days.size == 7 -> "Everyday"
-                days.isEmpty() -> "No days selected"
-                else -> days.joinToString(", ")
-            }
-            notificationsViewModel.setSelectedDays(daysText)
-        }
-
-        savedTimes?.let { times ->
-            // Save the old list for comparison
-            val oldList = ArrayList(selectedTimes)
-
-            // Clear and add new items
-            selectedTimes.clear()
-            selectedTimes.addAll(times)
-
-            // Determine the indices of added and removed items
-            val removedItems = oldList - selectedTimes.toSet()
-            val addedItems = selectedTimes - oldList.toSet()
-
-            // Notify removed items
-            removedItems.forEach { item ->
-                val index = oldList.indexOf(item)
-                if (index != -1) {
-                    timeAdapter.notifyItemRemoved(index)
+            when (PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) -> {
+                    Toast.makeText(requireContext(), "Notification permission already granted.", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
-
-            // Notify inserted items
-            addedItems.forEach { item ->
-                val index = selectedTimes.indexOf(item)
-                if (index != -1) {
-                    timeAdapter.notifyItemInserted(index)
-                }
-            }
-
-            // Notify item changes for any modifications in the existing list
-            val minSize = minOf(oldList.size, selectedTimes.size)
-            for (i in 0 until minSize) {
-                if (oldList[i] != selectedTimes[i]) {
-                    timeAdapter.notifyItemChanged(i)
-                }
-            }
-
-            // Update the visibility of hoursPopup based on the data set
-            binding.hoursPopup.visibility = if (selectedTimes.isEmpty()) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
         }
-
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    class TimeDiffCallback(
+        private val oldList: List<String>,
+        private val newList: List<String>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
     }
 }
