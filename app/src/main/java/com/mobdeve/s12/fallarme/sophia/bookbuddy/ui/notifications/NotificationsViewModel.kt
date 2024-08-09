@@ -1,7 +1,14 @@
 package com.mobdeve.s12.fallarme.sophia.bookbuddy.ui.notifications
 
-
-
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.mobdeve.s12.fallarme.sophia.bookbuddy.NotificationPreferences
+import com.mobdeve.s12.fallarme.sophia.bookbuddy.NotificationRepository
+import kotlinx.coroutines.launch
 
 class NotificationsViewModel : ViewModel() {
 
@@ -103,4 +110,3 @@ class NotificationsViewModel : ViewModel() {
         }
     }
 }
-

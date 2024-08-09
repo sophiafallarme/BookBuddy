@@ -27,7 +27,6 @@ class MyDbHelper(context: Context?) : SQLiteOpenHelper(context, DbReferences.DAT
         Log.d("MyDbHelper", "Creating tables...")
         db.execSQL(DbReferences.CREATE_TABLE_STATEMENT)
         db.execSQL(DbReferences.CREATE_BOOK_TABLE_STATEMENT)
-        db.execSQL(DbReferences.CREATE_NOTIFICATION_TABLE_STATEMENT) // Add this line
         Log.d("MyDbHelper", "Tables created.")
     }
 
@@ -413,48 +412,6 @@ fun updateBook(book: Book): Int {
             "${DbReferences._ID} = ?",
             arrayOf(accountId.toString())
         )
-    }
-
-    // Method to insert a new notification for a specific account
-    fun insertNotification(accountId: Long, title: String, message: String, time: String): Long {
-        val db = writableDatabase
-        val values = ContentValues().apply {
-            put(DbReferences.COLUMN_NAME_ACCOUNT_ID, accountId)
-            put(DbReferences.COLUMN_NAME_NOTIFICATION_TITLE, title)
-            put(DbReferences.COLUMN_NAME_NOTIFICATION_MESSAGE, message)
-            put(DbReferences.COLUMN_NAME_NOTIFICATION_TIME, time)
-        }
-        val newRowId = db.insert(DbReferences.NOTIFICATION_TABLE_NAME, null, values)
-        db.close() // Close the database to release resources
-        return newRowId
-    }
-
-    // Method to retrieve notifications for a specific account
-    fun getNotificationsForAccount(accountId: Long): List<Notification> {
-        val db = readableDatabase
-        val cursor = db.query(
-            DbReferences.NOTIFICATION_TABLE_NAME,
-            null,
-            "${DbReferences.COLUMN_NAME_ACCOUNT_ID} = ?",
-            arrayOf(accountId.toString()),
-            null,
-            null,
-            null
-        )
-
-        val notifications = mutableListOf<Notification>()
-        with(cursor) {
-            while (moveToNext()) {
-                val id = getLong(getColumnIndexOrThrow(DbReferences.COLUMN_NAME_NOTIFICATION_ID))
-                val title = getString(getColumnIndexOrThrow(DbReferences.COLUMN_NAME_NOTIFICATION_TITLE))
-                val message = getString(getColumnIndexOrThrow(DbReferences.COLUMN_NAME_NOTIFICATION_MESSAGE))
-                val time = getString(getColumnIndexOrThrow(DbReferences.COLUMN_NAME_NOTIFICATION_TIME))
-                notifications.add(Notification(id, accountId, title, message, time))
-            }
-            close() // Close the cursor to release resources
-        }
-        db.close() // Close the database after operations
-        return notifications
     }
 
 

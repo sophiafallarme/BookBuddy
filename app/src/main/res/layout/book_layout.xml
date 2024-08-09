@@ -35,8 +35,8 @@
         android:text="Author Name"
         android:textColor="#000000"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/bookCoverImg"
-        app:layout_constraintStart_toStartOf="@+id/bookCoverImg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/bookTitleTv" />
 
     <TextView
@@ -178,9 +178,9 @@
         android:text="Book Title"
         android:textColor="#000000"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/bookCoverImg"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="@+id/bookCoverImg"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/bookCoverImg" />
 
     <!-- Book Author -->
